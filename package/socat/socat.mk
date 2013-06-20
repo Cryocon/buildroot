@@ -1,10 +1,10 @@
-################################################################################
+#############################################################
 #
 # socat
 #
-################################################################################
+#############################################################
 
-SOCAT_VERSION = 2.0.0-b7
+SOCAT_VERSION = 1.7.2.4
 SOCAT_SOURCE = socat-$(SOCAT_VERSION).tar.bz2
 SOCAT_SITE = http://www.dest-unreach.org/socat/download/
 SOCAT_LICENSE = GPLv2
@@ -20,7 +20,6 @@ SOCAT_CONF_ENV = sc_cv_termios_ispeed=no \
 # so we can't use the normal autoreconf logic.
 
 SOCAT_DEPENDENCIES = host-autoconf
-
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 	SOCAT_DEPENDENCIES += openssl
 else
