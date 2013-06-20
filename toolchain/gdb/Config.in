@@ -21,7 +21,6 @@ comment "Gdb for the target needs WCHAR and threads support in toolchain"
 
 config BR2_PACKAGE_GDB_SERVER
 	bool "Build gdb server for the Target"
-	depends on !BR2_TOOLCHAIN_EXTERNAL
 	help
 	    Build the gdbserver stub to run on the target.
 	    A full gdb is needed to debug the progam.
@@ -37,7 +36,6 @@ config BR2_PACKAGE_GDB_HOST
 	bool "Build gdb for the Host"
 	# cross-gdb is supposed to be part of the external
 	# toolchain. And the build currently fails.
-	depends on !BR2_TOOLCHAIN_EXTERNAL
 	help
 	    Build gdb to run on the host to debug programs run on the target.
 
