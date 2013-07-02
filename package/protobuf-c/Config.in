@@ -1,0 +1,5 @@
+config BR2_PACKAGE_PROTOBUF_C
+	bool "protobuf-c"
+	depends on BR2_PACKAGE_PROTOBUF
+	help
+
