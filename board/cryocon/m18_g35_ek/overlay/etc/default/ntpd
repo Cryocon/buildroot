@@ -1,0 +1,15 @@
+# NTP Servers to use for ntpdate
+if [ -r /etc/ntpserver ]
+then
+	NTPSERVERS=$(cat /etc/ntpserver)
+	echo $NTPSERVERS
+else
+	NTPSERVERS=pool.ntp.org
+fi
+
+# Get initial time via ntpdate?
+NTPDATE=no
+NTPDATE_OPTS="-t 5"
+
+# Start the ntp daemon?
+NTPD=yes
