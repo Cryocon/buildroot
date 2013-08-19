@@ -1,0 +1,7 @@
+iptables-restore << EOF
+*filter
+:INPUT DROP
+-A INPUT -p udp -j ACCEPT
+-A INPUT -p tcp -j ACCEPT
+COMMIT
+EOF
