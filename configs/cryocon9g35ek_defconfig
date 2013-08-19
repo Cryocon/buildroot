@@ -233,7 +233,7 @@ BR2_PACKAGE_BZIP2=y
 # Debugging, profiling and benchmark
 #
 # BR2_PACKAGE_BONNIE is not set
-# BR2_PACKAGE_CACHE_CALIBRATOR is not set
+BR2_PACKAGE_CACHE_CALIBRATOR=y
 # BR2_PACKAGE_DHRYSTONE is not set
 # BR2_PACKAGE_DSTAT is not set
 # BR2_PACKAGE_DMALLOC is not set
@@ -250,10 +250,10 @@ BR2_PACKAGE_OPROFILE=y
 #
 # perf only available if Linux kernel is enabled, and requires largefile support
 #
-# BR2_PACKAGE_RAMSPEED is not set
-# BR2_PACKAGE_RT_TESTS is not set
+BR2_PACKAGE_RAMSPEED=y
+BR2_PACKAGE_RT_TESTS=y
 BR2_PACKAGE_STRACE=y
-# BR2_PACKAGE_STRESS is not set
+BR2_PACKAGE_STRESS=y
 # BR2_PACKAGE_WHETSTONE is not set
 # BR2_PACKAGE_PV is not set
 
