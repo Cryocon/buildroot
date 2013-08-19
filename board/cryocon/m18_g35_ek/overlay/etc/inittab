@@ -22,8 +22,9 @@ null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
+
 # now run any rc scripts
-::sysinit:/etc/init.d/rcS
+::once:/etc/init.d/rcS
 
 ::respawn:/usr/bin/spawn-fcgi -n -s/tmp/cryocond.sock -U www-data -- /var/cryocond
 
