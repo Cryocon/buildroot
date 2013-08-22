@@ -7,6 +7,7 @@ iptables-restore << EOF
 -A INPUT -p tcp -m tcp --dport 502 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -p udp -m udp --dport 5353 -j ACCEPT
+-A INPUT -p udp -m udp --dport 4111 -j ACCEPT
 -A INPUT -p tcp -j DROP
 -A INPUT -p udp -j DROP
 COMMIT
