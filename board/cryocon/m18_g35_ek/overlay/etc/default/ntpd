@@ -8,7 +8,7 @@ else
 fi
 
 # Get initial time via ntpdate?
-NTPDATE=no
+NTPDATE=yes
 NTPDATE_OPTS="-t 5"
 
 # Start the ntp daemon?
