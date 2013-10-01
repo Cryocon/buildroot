@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Buildroot 2013.02-00052-g7c4b614-dirty Configuration
+# Buildroot 2013.02-00055-ga77dd7e-dirty Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_HOSTARCH_NEEDS_IA32_LIBS=y
@@ -496,11 +496,11 @@ BR2_PACKAGE_PYTHON_PYC_ONLY=y
 #
 # The following modules are unusual or require extra libraries
 #
-# BR2_PACKAGE_PYTHON_BZIP2 is not set
+BR2_PACKAGE_PYTHON_BZIP2=y
 # BR2_PACKAGE_PYTHON_BSDDB is not set
 # BR2_PACKAGE_PYTHON_CODECSCJK is not set
 # BR2_PACKAGE_PYTHON_CURSES is not set
-# BR2_PACKAGE_PYTHON_PYEXPAT is not set
+BR2_PACKAGE_PYTHON_PYEXPAT=y
 # BR2_PACKAGE_PYTHON_READLINE is not set
 # BR2_PACKAGE_PYTHON_SSL is not set
 BR2_PACKAGE_PYTHON_UNICODEDATA=y
