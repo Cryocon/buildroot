@@ -27,6 +27,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::once:/etc/init.d/rcS
 
 ::respawn:/usr/bin/spawn-fcgi -n -s/tmp/cryocond.sock -U www-data -- /var/cryocond
+::respawn:/usr/sbin/crond -l 1 -f
 
 # Put a getty on the serial port
 # ttyS0::respawn:/bin/sh

@@ -1,0 +1,8 @@
+/var/lib/cryocond/datalog {
+	rotate 35
+	daily
+	missingok
+	copytruncate
+	notifempty
+	minsize 524288
+}
