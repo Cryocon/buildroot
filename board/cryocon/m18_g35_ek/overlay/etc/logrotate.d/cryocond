@@ -2,7 +2,9 @@
 	rotate 35
 	daily
 	missingok
-	copytruncate
 	notifempty
 	minsize 524288
+	postrotate
+		/usr/bin/killall -USR1 cryocond
+	endscript
 }
