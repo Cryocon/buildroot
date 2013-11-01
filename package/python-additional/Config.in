@@ -1,5 +1,11 @@
 config BR2_PACKAGE_PYTHON_ADDITIONAL
-	string "python-additional"
+	bool "python-additional"
 	depends on BR2_PACKAGE_PYTHON
+	help
+	  Space-separated list of Python packages to fetch using pip.
+
+config BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES
+	string "python-additional-packages"
+	depends on BR2_PACKAGE_PYTHON_ADDITIONAL
 	help
 	  Space-separated list of Python packages to fetch using pip.
