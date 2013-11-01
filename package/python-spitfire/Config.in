@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_SPITFIRE
+	bool "python-spitfire"
+	depends on BR2_PACKAGE_PYTHON
+	help
+	  Spitfire is a template language heavily inspired by Cheetah.
+
+	  http://code.google.com/p/spitfire
+
