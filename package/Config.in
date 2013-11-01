@@ -156,7 +156,6 @@ source "package/sunxi-tools/Config.in"
 source "package/unionfs/Config.in"
 source "package/xfsprogs/Config.in"
 endmenu
-
 menu "Games"
 source "package/doom-wad/Config.in"
 source "package/gnuchess/Config.in"
@@ -220,6 +219,7 @@ endif
 source "package/qt5/Config.in"
 source "package/weston/Config.in"
 source "package/x11r7/Config.in"
+
 
 comment "X applications"
 source "package/alsamixergui/Config.in"
@@ -472,6 +472,7 @@ source "package/python-pyzmq/Config.in"
 source "package/python-serial/Config.in"
 source "package/python-setuptools/Config.in"
 source "package/python-simplejson/Config.in"
+source "package/python-spitfire/Config.in"
 source "package/python-thrift/Config.in"
 source "package/python-tornado/Config.in"
 source "package/python-versiontools/Config.in"
@@ -855,6 +856,7 @@ source "package/readline/Config.in"
 source "package/slang/Config.in"
 endmenu
 
+
 endmenu
 
 menu "Miscellaneous"
@@ -881,7 +883,6 @@ source "package/msmtp/Config.in"
 source "package/mutt/Config.in"
 source "package/sylpheed/Config.in"
 endmenu
-
 menu "Networking applications"
 source "package/aiccu/Config.in"
 source "package/aircrack-ng/Config.in"
