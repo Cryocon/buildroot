@@ -3,7 +3,7 @@
 	daily
 	missingok
 	notifempty
-	compress
+	nocompress
 	minsize 524288
 	postrotate
 		/usr/bin/killall -USR1 cryocond
