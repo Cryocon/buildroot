@@ -1,0 +1,4 @@
+iface eth0-dhcp inet dhcp
+	hostname NAME-NOT-SET
+
+
