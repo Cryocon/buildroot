@@ -1,14 +1,16 @@
 iptables-restore << EOF
 *filter
-:INPUT DROP
--A INPUT -p tcp -m tcp --dport 5000 -j ACCEPT
--A INPUT -p udp -m udp --dport 5001 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 502 -j ACCEPT
--A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
--A INPUT -p udp -m udp --dport 4111 -j ACCEPT
--A INPUT -p udp -m udp --dport 123 -j ACCEPT
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -p udp -m udp --sport 255:65535 --dport 123 -j ACCEPT
+-A INPUT -p udp -m udp --sport 255:65535 --dport 4111 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 255:65535 --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 255:65535 --dport 502 -j ACCEPT
+-A INPUT -p udp -m udp --sport 255:65535 --dport 5001 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 255:65535 --dport 5000 -j ACCEPT
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
--A INPUT -p icmp --icmp-type 8 -s 0/0 -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
 # debugging entries
 -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 2345 -j ACCEPT
