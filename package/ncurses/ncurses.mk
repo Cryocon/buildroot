@@ -27,7 +27,8 @@ NCURSES_CONF_OPT = \
 	--enable-echo \
 	--enable-const \
 	--enable-overwrite \
-	--enable-pc-files
+	--enable-pc-files \
+	--with-termlib=tinfo
 
 ifneq ($(BR2_ENABLE_DEBUG),y)
 NCURSES_CONF_OPT += --without-debug
