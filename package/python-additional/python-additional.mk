@@ -4,7 +4,7 @@
 #
 #############################################################
 
-PYTHON_ADDITIONAL_DEPENDENCIES = python
+PYTHON_ADDITIONAL_DEPENDENCIES = python host-python-setuptools
 PYTHON_ADDITIONAL_VERSION =
 PYTHON_ADDITIONAL_SOURCE  =
 PYTHON_ADDITIONAL_SITE    =
