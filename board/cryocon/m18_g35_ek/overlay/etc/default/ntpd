@@ -9,7 +9,7 @@ fi
 
 # Get initial time via ntpdate?
 NTPDATE_BIN=
-NTPDATE_OPTS="-t 5"
+NTPDATE_OPTS="-t 0.2"
 
 # Start the ntp daemon?
 NTPD=yes
