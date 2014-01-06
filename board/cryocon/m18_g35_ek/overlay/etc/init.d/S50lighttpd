@@ -13,7 +13,10 @@ stop() {
 }
 restart() {
 	stop
-	start
+	until start
+	do
+		stop
+	done
 }
 
 case "$1" in
