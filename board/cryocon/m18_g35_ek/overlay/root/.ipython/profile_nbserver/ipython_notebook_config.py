@@ -12,7 +12,7 @@ c = get_config()
 # c.NotebookApp.mathjax_url = ''
 
 # The IP address the notebook server will listen on.
-# c.NotebookApp.ip = '127.0.0.1'
+c.NotebookApp.ip = '*'
 
 # The base URL for the notebook server.
 # 
