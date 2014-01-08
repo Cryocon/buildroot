@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Starts IPython notebook.
+#
+
+start() {
+	echo -n "Starting IPython Notebook: "
+	start-stop-daemon -S -q -p /var/run/ipython-notebook.pid -b -m --exec /usr/bin/ipython -- notebook --ip=* --port=8888 --no-browser --notebook-dir=/var/lib/cryocond/notebooks --ext=socket && echo "OK"
+}
+stop() {
+	echo -n "Stopping IPython Notebook: "
+	start-stop-daemon -K -q -p /var/run/ipython-notebook.pid && rm /var/run/ipython-notebook.pid && echo "OK"
+}
+restart() {
+	stop
+	until start
+	do
+		stop
+	done
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
