@@ -5,7 +5,7 @@
 
 start() {
 	echo -n "Starting IPython Notebook: "
-	start-stop-daemon -S -q -p /var/run/ipython-notebook.pid -b -m --exec /usr/bin/ipython -- notebook --ip=* --port=8888 --no-browser --notebook-dir=/var/lib/cryocond/notebooks --ext=socket && echo "OK"
+	start-stop-daemon -S -q -p /var/run/ipython-notebook.pid -b -m --exec /usr/bin/ipython -- notebook --ip=* --port=8888 --no-browser --notebook-dir=/var/lib/cryocond/notebooks --ext=socket --NotebookApp.base_project_url=/ipython && echo "OK"
 }
 stop() {
 	echo -n "Stopping IPython Notebook: "
