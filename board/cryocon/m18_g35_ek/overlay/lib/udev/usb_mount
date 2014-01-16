@@ -1,0 +1,6 @@
+#!/bin/sh
+
+mount /dev/$1 /media/usb0 &&
+ln -s /media/usb0/log.csv /var/lib/cryocond/data/log 
+( rm /var/lib/cryocond/data/log || true ) &&
+/usr/bin/killall -USR1 cryocond
