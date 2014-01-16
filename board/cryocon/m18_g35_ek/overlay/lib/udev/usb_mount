@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mount /dev/$1 /media/usb0 &&
-ln -s /media/usb0/log.csv /var/lib/cryocond/data/log 
-( rm /var/lib/cryocond/data/log || true ) &&
-/usr/bin/killall -USR1 cryocond
+kill -HUP $(lsof -t $(find /media/usb0));
+( mount $1 /media/usb0 -onoexec,relatime || mount /media/usb0 -onoexec,relatime,remount ) &&
+>/tmp/socat.out nohup socat -u /var/lib/cryocond/data/log,ignoreeof,seek-end=1 open:/media/usb0/\"$(date -Ihours)\".csv,sync=1,append=1,creat=1 &
+#/usr/bin/killall -USR1 cryocond
