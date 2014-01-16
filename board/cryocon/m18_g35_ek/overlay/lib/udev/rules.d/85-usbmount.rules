@@ -1,0 +1,4 @@
+# Rules for USBmount -*- conf -*-
+
+ACTION=="add",SUBSYSTEM=="block",KERNEL=="sd[a-h]1",	RUN+="usb_mount %k"
+ACTION=="remove",SUBSYSTEM=="block",KERNEL=="sd[a-h]1",	RUN+="usb_unmount %k"

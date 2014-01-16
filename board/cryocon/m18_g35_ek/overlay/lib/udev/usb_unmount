@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm /var/lib/cryocond/data/log
+umount /media/usb0
+/usr/bin/killall -USR1 cryocond
