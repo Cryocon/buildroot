@@ -1,5 +1,6 @@
 #!/bin/sh
 
-rm /var/lib/cryocond/data/log
+#rm /var/lib/cryocond/data/log
+kill -HUP $(lsof -t $(find /media/usb0))
 umount /media/usb0
-/usr/bin/killall -USR1 cryocond
+
