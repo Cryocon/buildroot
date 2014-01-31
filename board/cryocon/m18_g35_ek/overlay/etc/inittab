@@ -19,11 +19,11 @@ null::sysinit:/bin/mount -t proc proc /proc
 #null::sysinit:/bin/mount -t devtmpfs dev /dev
 null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
+::sysinit:/sbin/insmod /lib/modules/kernel/drivers/char/xilinx-sscu.ko g_debug=1
+::sysinit:/bin/dd if=/opt/fpga0.bit of=/dev/fpga0
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
-::sysinit:/sbin/insmod /lib/modules/kernel/drivers/char/xilinx-sscu.ko g_debug=1
-::sysinit:/bin/dd if=/var/fpga0.bit of=/dev/fpga0
 ::sysinit:/sbin/rmmod xilinx-sscu
 ::sysinit:/sbin/insmod /lib/modules/kernel/drivers/spi/spi-atmel.ko
 ::sysinit:/sbin/insmod /lib/modules/kernel/drivers/spi/spidev.ko
