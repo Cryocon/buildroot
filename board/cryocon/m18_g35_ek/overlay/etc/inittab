@@ -20,7 +20,7 @@ null::sysinit:/bin/mount -t proc proc /proc
 null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/insmod /lib/modules/kernel/drivers/char/xilinx-sscu.ko g_debug=1
-::sysinit:/bin/dd if=/opt/fpga0.bit of=/dev/fpga0
+::sysinit:/bin/dd if=/opt/fpga0.bit of=/dev/fpga0 conv=fdatasync
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
