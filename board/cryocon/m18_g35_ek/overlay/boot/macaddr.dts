@@ -1,0 +1,13 @@
+/dts-v1/;
+/include/ "at91sam9g35ek.dtsi"
+/ {
+ahb {
+apb {
+ethernet@f802c000 {
+mac-address = [
+/include/ "macaddr.dtsi"
+];
+};
+};
+};
+};

@@ -693,6 +693,12 @@ BR2_PACKAGE_LIBPNG=y
 # Hardware handling
 #
 # BR2_PACKAGE_CCID is not set
+BR2_PACKAGE_DTC=y
+BR2_PACKAGE_DTC_PROGRAMS=y
+
+#
+# dtdiff will not be installed: it requires bash
+#
 
 #
 # imx-lib needs an imx-specific kernel to be built
