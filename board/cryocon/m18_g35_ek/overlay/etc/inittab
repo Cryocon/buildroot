@@ -26,6 +26,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 # now run any rc scripts
 ::once:/etc/init.d/rcS
 
+::respawn:/usr/bin/gdbserver --multi :2345
 ::respawn:/var/cryocond
 ::respawn:/bin/sh -c "cd /var && /usr/bin/python /var/cryocon-fcgi.py"
 ::respawn:/usr/sbin/crond -l 1 -f
