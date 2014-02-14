@@ -3,7 +3,7 @@ DEST=$1
 # Copy all files
 cp -rL ~/cryocond/root/* $DEST &&
 # Copy cryocond executable
-cp -L ~/cryocond/M18I/ARM/cryocond $DEST/var &&
+cp -L ~/cryocond/M54/ARM-EK/cryocond $DEST/var &&
 # Install web pages
 # Install updater
 cp -rL ~/cryocond/new_web/* $DEST/var &&
