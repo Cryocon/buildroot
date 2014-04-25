@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Buildroot 2013.02-00118-ge4c6229-dirty Configuration
+# Buildroot 2013.02-00138-g38c0731 Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_HOSTARCH_NEEDS_IA32_LIBS=y
@@ -152,7 +152,7 @@ BR2_ECLIPSE_REGISTER=y
 #
 # System configuration
 #
-BR2_TARGET_GENERIC_HOSTNAME="AT91SAM9"
+BR2_TARGET_GENERIC_HOSTNAME="m18i"
 BR2_TARGET_GENERIC_ISSUE="Welcome to Buildroot"
 # BR2_TARGET_GENERIC_PASSWD_DES is not set
 BR2_TARGET_GENERIC_PASSWD_MD5=y
