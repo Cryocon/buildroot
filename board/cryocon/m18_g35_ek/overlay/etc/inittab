@@ -19,19 +19,15 @@ null::sysinit:/bin/mount -t proc proc /proc
 #null::sysinit:/bin/mount -t devtmpfs dev /dev
 null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
-::sysinit:/sbin/insmod /lib/modules/kernel/drivers/char/xilinx-sscu.ko g_debug=1
-::sysinit:/usr/bin/load_fpga /opt/fpga0.bit /dev/fpga0 5
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
-::sysinit:/sbin/rmmod xilinx-sscu
-::sysinit:/sbin/insmod /lib/modules/kernel/drivers/spi/spi-atmel.ko
-::sysinit:/sbin/insmod /lib/modules/kernel/drivers/spi/spidev.ko
+::sysinit:/bin/mknod /dev/spidev0.0 c 153 0
+::sysinit:/bin/mknod /dev/spidev1.0 c 153 1
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
 
-::respawn:/usr/bin/gdbserver --multi :2345
 ::respawn:/var/cryocond
 ::respawn:/bin/sh -c "cd /var && /usr/bin/python /var/cryocon-fcgi.py"
 ::respawn:/usr/sbin/crond -l 1 -f
