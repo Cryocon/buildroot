@@ -29,7 +29,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::once:/etc/init.d/rcS
 
 ::respawn:/var/cryocond
-::respawn:/bin/sh -c "cd /var && /usr/bin/python /var/cryocon-fcgi.py"
+::respawn:/bin/sh -c "cd /var && /var/cryocon-fcgi.py"
 ::respawn:/usr/sbin/crond -l 1 -f
 
 # Put a getty on the serial port
