@@ -1,0 +1,3 @@
+config BR2_PACKAGE_PYTHON_TORNADO
+	bool "python-tornado"
+	depends on BR2_PACKAGE_PYTHON
