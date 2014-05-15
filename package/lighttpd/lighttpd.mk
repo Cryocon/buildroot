@@ -16,6 +16,8 @@ LIGHTTPD_CONF_OPTS = \
 	--libexecdir=/usr/lib \
 	$(if $(BR2_LARGEFILE),,--disable-lfs)
 
+LIGHTTPD_CONF_OPTS += --with-websocket=all
+
 ifeq ($(BR2_PACKAGE_LIGHTTPD_OPENSSL),y)
 LIGHTTPD_DEPENDENCIES += openssl
 LIGHTTPD_CONF_OPTS += --with-openssl
