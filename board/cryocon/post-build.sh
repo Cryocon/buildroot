@@ -4,7 +4,7 @@ DEST=$1
 cp -rL ~/cryocond/root/* $DEST &&
 # Install web pages
 # Install updater
-cp -rL ~/cryocond/new_web/* $DEST/var &&
+cp -rL ~/cryocond/new_web/www $DEST/var &&
 # Copy splash screen executable
 (cp -L ~/cryocond/splash/ARM/splash $DEST/opt || true) &&
 # Install user's public key
