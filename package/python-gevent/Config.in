@@ -1,0 +1,4 @@
+config BR2_PACKAGE_PYTHON_GEVENT
+	bool "python-gevent"
+	depends on BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_LIBEV
