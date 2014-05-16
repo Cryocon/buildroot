@@ -29,7 +29,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::once:/etc/init.d/rcS
 
 ::respawn:/usr/bin/cryocond
-::respawn:/bin/sh -c "cd /var && /usr/bin/cryocon-fcgi.py"
+::respawn:/usr/bin/python /usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
 
