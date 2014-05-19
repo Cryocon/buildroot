@@ -1,5 +1,5 @@
 /dts-v1/;
-/include/ "at91sam9g35ek.dtsi"
+/include/ "current.dtsi"
 / {
 ahb {
 apb {
