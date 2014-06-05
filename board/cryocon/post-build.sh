@@ -1,7 +1,7 @@
 #!/bin/bash
 DEST=$1
 # Copy all files
-cp -rL ~/cryocond/root/* $DEST &&
+(cp -rvL ~/cryocond/root/* $DEST || true) &&
 # Install web pages
 # Install updater
 cp -rL ~/cryocond/new_web/www $DEST/var &&
