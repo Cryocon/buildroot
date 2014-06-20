@@ -31,7 +31,8 @@ PKG_PYTHON_DISTUTILS_ENV = \
 	_python_sysroot=$(STAGING_DIR) \
 	_python_srcdir=$(PYTHON_DIR) \
 	_python_prefix=/usr \
-	_python_exec_prefix=/usr
+	_python_exec_prefix=/usr \
+	PYTHONPATH="$(TARGET_DIR)/usr/lib/python$(PYTHON_VERSION_MAJOR)/site-packages" 
 
 PKG_PYTHON_DISTUTILS_BUILD_OPT = \
 	--executable=/usr/bin/python

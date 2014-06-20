@@ -11,8 +11,7 @@ PYTHON_GEVENT_DEPENDENCIES = libev python-greenlet
 PYTHON_GEVENT_SETUP_TYPE = distutils
 
 define PYTHON_GEVENT_EXTRACT_CMDS
-	gzip -c > $(@D)
-	tar xf $(@D) $(DL_DIR)/$(PYTHON_GEVENT_SOURCE)
+	tar xzf $(DL_DIR)/$(PYTHON_GEVENT_SOURCE) -C $(@D) --strip-components=1
 	rm -rf $(@D)/libev
 	ln -s ../libev-4.11 $(@D)/libev
 endef
