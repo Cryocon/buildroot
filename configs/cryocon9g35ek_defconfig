@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Buildroot 2013.02-00154-g73c2977-dirty Configuration
+# Buildroot 2013.02-00163-g31d2dde-dirty Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_HOSTARCH_NEEDS_IA32_LIBS=y
@@ -555,10 +555,10 @@ BR2_PACKAGE_PYTHON_ZLIB=y
 # external python modules
 #
 BR2_PACKAGE_PYTHON_ADDITIONAL=y
-BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES="flask flup Flask-Sockets gunicorn"
+BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES="flask flup Flask-Sockets gunicorn jinja2"
 # BR2_PACKAGE_PYTHON_BOTTLE is not set
 BR2_PACKAGE_PYTHON_DPKT=y
-BR2_PACKAGE_PYTHON_GEVENT=y
+# BR2_PACKAGE_PYTHON_GEVENT is not set
 BR2_PACKAGE_PYTHON_GREENLET=y
 # BR2_PACKAGE_PYTHON_ID3 is not set
 # BR2_PACKAGE_PYTHON_MAD is not set

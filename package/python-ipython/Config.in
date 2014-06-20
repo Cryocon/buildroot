@@ -1,7 +1,8 @@
 config BR2_PACKAGE_PYTHON_IPYTHON
 	bool "python-ipython"
 	depends on BR2_PACKAGE_PYTHON
-	select BR2_PACKAGE_PYTHON_PYZMQ 
+	select BR2_PACKAGE_PYTHON_PYZMQ
+	select BR2_PACKAGE_PYTHON_TORNADO
 	select BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES
 	help
 	  This package contains IPython
