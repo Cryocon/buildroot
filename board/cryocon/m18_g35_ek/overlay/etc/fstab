@@ -10,3 +10,5 @@ tmpfs           /tmp           tmpfs    defaults,size=32M          0      0
 sysfs		/sys	       sysfs    defaults	  0	 0
 /dev/mmcblk0p1  /boot          vfat     defaults          0      2
 /dev/mmcblk0p3  /var           ext3     defaults          0      2
+ubi1:var		/var			ubifs	defaults	0	2
+ubi0:var		/var			ubifs	defaults	0	2
