@@ -1,0 +1,7 @@
+config BR2_PACKAGE_MOSH
+	bool "mosh"
+	select BR2_PACKAGE_NCURSES
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_PROTOBUF
+	select BR2_PACKAGE_OPENSSL
+
