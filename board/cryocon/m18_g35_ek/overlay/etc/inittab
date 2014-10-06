@@ -22,11 +22,6 @@ null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
-::sysinit:/bin/mknod /dev/spidev0.0 c 153 0
-::sysinit:/bin/mknod /dev/spidev0.1 c 153 1
-::sysinit:/bin/mknod /dev/spidev0.2 c 153 2
-::sysinit:/bin/mknod /dev/spidev0.3 c 153 3
-::sysinit:/bin/mknod /dev/spidev1.0 c 153 4
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
