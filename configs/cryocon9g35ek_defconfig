@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Buildroot 2014.05-00147-g623a5c9-dirty Configuration
+# Buildroot 2014.05-00160-gefc5198 Configuration
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_HOSTARCH_NEEDS_IA32_LIBS=y
@@ -294,9 +294,10 @@ BR2_PACKAGE_BZIP2=y
 # BR2_PACKAGE_BONNIE is not set
 # BR2_PACKAGE_CACHE_CALIBRATOR is not set
 # BR2_PACKAGE_DHRYSTONE is not set
+# BR2_PACKAGE_DMALLOC is not set
 # BR2_PACKAGE_DROPWATCH is not set
 # BR2_PACKAGE_DSTAT is not set
-# BR2_PACKAGE_DMALLOC is not set
+# BR2_PACKAGE_DUMA is not set
 # BR2_PACKAGE_FIO is not set
 BR2_PACKAGE_GDB=y
 BR2_PACKAGE_GDB_SERVER=y
@@ -994,6 +995,8 @@ BR2_PACKAGE_EXPAT=y
 # BR2_PACKAGE_AGENTPP is not set
 # BR2_PACKAGE_C_ARES is not set
 # BR2_PACKAGE_CPPZMQ is not set
+# BR2_PACKAGE_CZMQ is not set
+# BR2_PACKAGE_FILEMQ is not set
 # BR2_PACKAGE_GLIB_NETWORKING is not set
 # BR2_PACKAGE_LIBCGI is not set
 # BR2_PACKAGE_LIBCGICC is not set
@@ -1048,6 +1051,7 @@ BR2_PACKAGE_NSS_MDNS=y
 BR2_PACKAGE_ZEROMQ=y
 # BR2_PACKAGE_ZEROMQ_PGM is not set
 # BR2_PACKAGE_ZMQPP is not set
+# BR2_PACKAGE_ZYRE is not set
 
 #
 # Other
