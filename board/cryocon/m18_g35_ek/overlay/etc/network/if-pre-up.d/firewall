@@ -1,10 +1,18 @@
 iptables-restore << EOF
+*mangle
+:PREROUTING ACCEPT [2556:165228]
+:INPUT ACCEPT [2550:164419]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [2073:178945]
+:POSTROUTING ACCEPT [2131:190627]
+COMMIT
 *filter
 :INPUT DROP [0:0]
 :FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [2:108]
 -A INPUT -p udp -m udp --sport 255:65535 --dport 123 -j ACCEPT
 -A INPUT -p udp -m udp --sport 255:65535 --dport 4111 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 255:65535 --dport 4112 -j ACCEPT
 -A INPUT -p tcp -m tcp --sport 255:65535 --dport 80 -j ACCEPT
 -A INPUT -p tcp -m tcp --sport 255:65535 --dport 443 -j ACCEPT
 -A INPUT -p tcp -m tcp --sport 255:65535 --dport 502 -j ACCEPT
