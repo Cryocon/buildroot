@@ -2,14 +2,13 @@
 if [ -r /etc/ntpserver ]
 then
 	NTPSERVERS=$(cat /etc/ntpserver)
-	echo $NTPSERVERS
 else
 	NTPSERVERS=pool.ntp.org
 fi
 
 # Get initial time via ntpdate?
-NTPDATE_BIN=
-NTPDATE_OPTS="-t 0.2"
+NTPDATE_BIN=/usr/bin/ntpdate
+NTPDATE_OPTS="-b -t 0.2"
 
 # Start the ntp daemon?
 NTPD=yes
