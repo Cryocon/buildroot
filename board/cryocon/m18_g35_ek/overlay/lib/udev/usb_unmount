@@ -1,6 +1,0 @@
-#!/bin/sh
-
-#rm /var/lib/cryocond/data/log
-kill -HUP $(lsof -t +D /media/usb0);
-umount /media/usb0
-
