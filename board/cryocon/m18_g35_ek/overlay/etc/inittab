@@ -22,6 +22,11 @@ null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
+::sysinit:/bin/ln -s /dev/spidev32766.0 /dev/spidev0.0
+::sysinit:/bin/ln -s /dev/spidev32765.0 /dev/spidev1.0
+::sysinit:/bin/ln -s /dev/spidev32766.1 /dev/spidev0.1
+::sysinit:/bin/ln -s /dev/spidev32766.2 /dev/spidev0.2
+::sysinit:/bin/ln -s /dev/spidev32766.3 /dev/spidev0.3
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
