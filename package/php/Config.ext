@@ -138,7 +138,7 @@ config BR2_PACKAGE_PHP_EXT_PDO_MYSQL
 
 comment "MySQL drivers need a toolchain w/ C++"
 	depends on BR2_USE_MMU
-	depends on !BR2_INSTALL_LIBSTDCPP
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS
 
 config BR2_PACKAGE_PHP_EXT_PDO_POSTGRESQL
 	bool "PostgreSQL"
