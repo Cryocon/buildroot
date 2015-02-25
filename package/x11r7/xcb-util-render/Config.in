@@ -1,0 +1,5 @@
+config BR2_PACKAGE_XCB_UTIL_RENDER
+	bool "xcb-util-render"
+	depends on BR2_PACKAGE_LIBXCB
+	help
+	  http://xcb.freedesktop.org/

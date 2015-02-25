@@ -64,4 +64,6 @@ define LUAJIT_INSTALL_TARGET_CMDS
 	$(MAKE) PREFIX="/usr" DESTDIR="$(TARGET_DIR)" LDCONFIG=true -C $(@D) install
 endef
 
+$(eval $(host-generic-package))
 $(eval $(generic-package))
+

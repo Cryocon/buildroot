@@ -1,0 +1,52 @@
+menuconfig BR2_PACKAGE_EFL18
+	bool "Enlightenment Foundation Libraries (new packaging)"
+	depends on BR2_USE_WCHAR
+	# libeina, libeo, libescape use madvise().
+	depends on BR2_USE_MMU
+	select BR2_PACKAGE_LIBEDJE18
+	select BR2_PACUAGE_DBUS
+	help
+	  Enlightenment Foundation Libraries
+
+	  http://enlightenment.org
+
+if BR2_PACKAGE_EFL18
+
+comment "libedje needs a toolchain w/ threads"
+	depends on !BR2_avr32
+	depends on !BR2_TOOLCHAIN_HAS_THREADS
+
+config BR2_PACKAGE_LIBEDJE18
+	bool "libedje18"
+#	select BR2_PACKAGE_LIBEINA
+#	select BR2_PACKAGE_LIBEET
+#	select BR2_PACKAGE_LIBECORE
+#	select BR2_PACKAGE_LIBECORE_EVAS
+#	select BR2_PACKAGE_LIBEMBRYO
+#	select BR2_PACKAGE_LIBEVAS
+#	select BR2_PACKAGE_LUA
+	select BR2_PACKAGE_LUAJIT
+	depends on !BR2_avr32 # libevas
+	depends on BR2_TOOLCHAIN_HAS_THREADS # libevas
+	help
+	  A graphical layout and animation library for animated
+	  resizable, compressed and scalable themes.
+
+	  http://trac.enlightenment.org/e/wiki/Edje #TODO: Updated web address
+
+if BR2_PACKAGE_LIBEDJE18
+
+config BR2_PACKAGE_LIBEDJE18_CC
+	bool "build edje18_cc"
+	help
+	  Build and install the Edje compiler for the target. Normally this
+	  is not required.
+
+endif
+
+source "package/efl18/libelementary18/Config.in"
+
+endif # BR2_PACKAGE_EFL18
+
+comment "EFL needs a toolchain w/ wchar"
+	depends on !BR2_USE_WCHAR
