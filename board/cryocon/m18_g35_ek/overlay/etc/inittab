@@ -26,7 +26,8 @@ null::sysinit:/bin/hostname -F /etc/hostname
 # now run any rc scripts
 ::once:/etc/init.d/rcS
 
-::respawn:/usr/bin/cryocond
+::respawn:env DISPLAY=:0 /usr/bin/cryocond
+::respawn:/usr/bin/Xorg -retro
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
