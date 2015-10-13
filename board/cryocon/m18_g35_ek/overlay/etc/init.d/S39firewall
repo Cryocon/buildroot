@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Restores netfilter rules.
+#
+
+start() {
+	echo -n "Starting firewall: "
+	iptables-restore < /etc/network/iptables.rules && 
+		echo "OK" ||
+		echo "Failed"
+}
+
+case "$1" in
+  start|restart|reload)
+	start
+	;;
+  *)
+	echo "Usage: $0 {start}"
+	exit 1
+esac
+
+exit $?
+
