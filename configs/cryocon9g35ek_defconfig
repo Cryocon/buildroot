@@ -538,6 +538,7 @@ BR2_PACKAGE_MTD_UBIBLOCK=y
 # Other GUIs
 #
 # BR2_PACKAGE_EFL is not set
+# BR2_PACKAGE_EFL18 is not set
 # BR2_PACKAGE_QT is not set
 BR2_PACKAGE_QT5_JSCORE_AVAILABLE=y
 # BR2_PACKAGE_QT5 is not set
@@ -547,10 +548,24 @@ BR2_PACKAGE_QT5_JSCORE_AVAILABLE=y
 #
 # X applications
 #
+# BR2_PACKAGE_ALSAMIXERGUI is not set
+# BR2_PACKAGE_APITRACE is not set
+# BR2_PACKAGE_DILLO is not set
+# BR2_PACKAGE_DOCKER is not set
+# BR2_PACKAGE_FEH is not set
+# BR2_PACKAGE_FREERDP is not set
 
 #
 # midori needs libgtk2 and a toolchain w/ C++, wchar, threads
 #
+# BR2_PACKAGE_RDESKTOP is not set
+# BR2_PACKAGE_SYNERGY is not set
+# BR2_PACKAGE_TORSMO is not set
+# BR2_PACKAGE_WMCTRL is not set
+# BR2_PACKAGE_X11VNC is not set
+# BR2_PACKAGE_XSCREENSAVER is not set
+# BR2_PACKAGE_XTERM is not set
+# BR2_PACKAGE_XVKBD is not set
 
 #
 # X libraries and helper libraries
@@ -562,6 +577,9 @@ BR2_PACKAGE_QT5_JSCORE_AVAILABLE=y
 #
 # X window managers
 #
+# BR2_PACKAGE_ENLIGHTENMENT is not set
+# BR2_PACKAGE_FLUXBOX is not set
+# BR2_PACKAGE_MATCHBOX is not set
 
 #
 # Hardware handling
@@ -1631,6 +1649,7 @@ BR2_PACKAGE_HOST_SAM_BA=y
 # BR2_sparc_sparchfleonv8 is not set
 # BR2_sparc_sparcsfleon is not set
 # BR2_sparc_sparcsfleonv8 is not set
+# BR2_PACKAGE_XLIB_LIBPCIACCESS is not set
 # BR2_PACKAGE_LINUX_FIRMWARE_XC5000 is not set
 # BR2_PACKAGE_LINUX_FIRMWARE_CXGB4 is not set
 # BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_7 is not set
@@ -1677,6 +1696,7 @@ BR2_PACKAGE_TZDATA_ZONELIST=""
 # BR2_PACKAGE_UDEV is not set
 # BR2_PACKAGE_UDEV_RULES_GEN is not set
 # BR2_PACKAGE_UDEV_ALL_EXTRAS is not set
+# BR2_PACKAGE_XLIB_LIBPTHREAD_STUBS is not set
 
 #
 # Legacy options removed in 2014.02
