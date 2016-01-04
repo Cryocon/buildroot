@@ -3,6 +3,10 @@ config BR2_PACKAGE_PYTHON_ADDITIONAL
 	depends on BR2_PACKAGE_PYTHON
 	help
 	  Space-separated list of Python packages to fetch using pip.
+	select BR2_PACKAGE_PYTHON_FLUP 
+	select BR2_PACKAGE_PYTHON_GEVENT 
+	select BR2_PACKAGE_PYTHON_GREENLET 
+	select BR2_PACKAGE_PYTHON_SETUPTOOLS
 
 config BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES
 	string "python-additional-packages"
