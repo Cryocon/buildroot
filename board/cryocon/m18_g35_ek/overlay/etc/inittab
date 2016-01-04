@@ -27,7 +27,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::once:/etc/init.d/rcS
 
 ::respawn:/usr/bin/cryocond
-::respawn:/bin/su -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
+::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
 
