@@ -31,7 +31,8 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::sysinit:/sbin/modprobe -r xilinx-sscu
 ::sysinit:/sbin/modprobe -a atmel-hlcdc-dc ft5x06-ts spi-atmel
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
-::respawn:/usr/bin/Xorg -retro
+::respawn:/usr/bin/Xorg
+::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
