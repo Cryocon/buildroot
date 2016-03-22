@@ -1,8 +1,5 @@
 config BR2_PACKAGE_PYTHON_IPYTHON
 	bool "python-ipython"
-	select BR2_PACKAGE_PYTHON_PYZMQ
-	select BR2_PACKAGE_PYTHON_TORNADO
-	select BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES
 	help
 	  IPython is a command shell for interactive computing in multiple
 	  programming languages, originally developed for the Python
@@ -10,3 +7,12 @@ config BR2_PACKAGE_PYTHON_IPYTHON
 	  media, additional shell syntax, tab completion, and rich history.
 
 	  http://ipython.org/
+
+if BR2_PACKAGE_PYTHON_IPYTHON
+    config BR2_PACKAGE_PYTHON_IPYTHON_NOTEBOOK
+	    bool "IPython Notebook"
+	    select BR2_PACKAGE_PYTHON_PYZMQ
+	    select BR2_PACKAGE_PYTHON_TORNADO
+	    select BR2_PACKAGE_PYTHON_JINJA2
+endif
+
