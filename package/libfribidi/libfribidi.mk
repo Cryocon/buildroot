@@ -22,3 +22,4 @@ LIBFRIBIDI_CONF_OPTS += --with-glib=no
 endif
 
 $(eval $(autotools-package))
+$(eval $(host-autotools-package))

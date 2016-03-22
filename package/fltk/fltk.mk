@@ -46,6 +46,7 @@ endif
 ifeq ($(BR2_PACKAGE_XLIB_LIBXFT),y)
 FLTK_CONF_ENV += ac_cv_path_FTCONFIG=$(STAGING_DIR)/usr/bin/freetype-config
 FLTK_DEPENDENCIES += xlib_libXft
+FLTK_CONF_OPTS += --enable-xft
 else
 FLTK_CONF_OPTS += --disable-xft
 endif
