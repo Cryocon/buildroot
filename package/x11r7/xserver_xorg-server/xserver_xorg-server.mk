@@ -56,6 +56,13 @@ XSERVER_XORG_SERVER_DEPENDENCIES = 	\
 	mcookie 			\
 	host-pkgconf
 
+# Segfault in libfb.so:fbGlyphs() can be produced using -Os with gcc 4.9/5, 
+# see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63346 for details
+
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_9)$(BR2_arm)$(BR2_armeb),yy)
+XSERVER_XORG_SERVER_CFLAGS += -O1
+endif
+
 XSERVER_XORG_SERVER_CONF_OPTS = \
 	--disable-config-hal \
 	--disable-xnest \
