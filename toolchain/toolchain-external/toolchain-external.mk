@@ -90,6 +90,10 @@ ifeq ($(BR2_INSTALL_LIBSTDCPP),y)
 USR_LIB_EXTERNAL_LIBS += libstdc++.so.*
 endif
 
+ifeq ($(BR2_PACKAGE_NANOMSG),y)
+LIB_EXTERNAL_LIBS += libanl.so.*   # libevent has its own, but nanomsg doesn't
+endif
+
 LIB_EXTERNAL_LIBS += $(call qstrip,$(BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS))
 
 # Details about sysroot directory selection.
