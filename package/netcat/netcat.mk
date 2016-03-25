@@ -6,7 +6,7 @@
 
 NETCAT_VERSION = 5
 # NETCAT_SOURCE = netcat-$(NETCAT_VERSION).tar.gz
-NETCAT_SITE = http://openbsd-netcat.googlecode.com/svn/trunk/
+NETCAT_SITE = http://openbsd-netcat.googlecode.com/svn/trunk
 NETCAT_SITE_METHOD=svn
 NETCAT_LICENSE = BSD-3c
 

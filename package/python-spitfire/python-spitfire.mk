@@ -6,7 +6,7 @@
 
 PYTHON_SPITFIRE_VERSION = 163
 #PYTHON_SPITFIRE_SOURCE  = spitfire-$(PYTHON_SPITFIRE_VERSION).tar.gz
-PYTHON_SPITFIRE_SITE    = http://spitfire.googlecode.com/svn/trunk/
+PYTHON_SPITFIRE_SITE    = http://spitfire.googlecode.com/svn/trunk
 PYTHON_SPITFIRE_SITE_METHOD = svn
 PYTHON_SPITFIRE_DEPENDENCIES = python
 

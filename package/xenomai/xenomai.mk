@@ -7,6 +7,8 @@
 XENOMAI_VERSION = $(call qstrip,$(BR2_PACKAGE_XENOMAI_VERSION))
 ifeq ($(XENOMAI_VERSION),)
 XENOMAI_VERSION = 2.6.4
+else
+BR_NO_CHECK_HASH_FOR += $(XENOMAI_SOURCE)
 endif
 
 XENOMAI_SITE = http://download.gna.org/xenomai/stable
@@ -99,7 +101,7 @@ XENOMAI_DEPENDENCIES += udev
 define XENOMAI_INSTALL_UDEV_RULES
 	if test -d $(TARGET_DIR)/etc/udev/rules.d ; then \
 		for f in $(@D)/ksrc/nucleus/udev/*.rules ; do \
-			cp $$f $(TARGET_DIR)/etc/udev/rules.d/ ; \
+			cp $$f $(TARGET_DIR)/etc/udev/rules.d/ || exit 1 ; \
 		done ; \
 	fi;
 endef

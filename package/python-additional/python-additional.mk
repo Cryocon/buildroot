@@ -5,7 +5,7 @@
 #############################################################
 
 PYTHON_ADDITIONAL_DEPENDENCIES = python host-python-setuptools \
-	python-setuptools python-greenlet python-gevent python-flup
+	python-setuptools python-gevent python-flask python-gunicorn
 PYTHON_ADDITIONAL_VERSION =
 PYTHON_ADDITIONAL_SOURCE  =
 PYTHON_ADDITIONAL_SITE    =

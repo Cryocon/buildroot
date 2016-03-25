@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GNUPG_VERSION = 1.4.18
+GNUPG_VERSION = 1.4.20
 GNUPG_SOURCE = gnupg-$(GNUPG_VERSION).tar.bz2
 GNUPG_SITE = ftp://ftp.gnupg.org/gcrypt/gnupg
 GNUPG_LICENSE = GPLv3+
@@ -31,6 +31,12 @@ else
 GNUPG_CONF_OPTS += --without-readline
 endif
 
+ifeq ($(BR2_PACKAGE_GNUPG_AES),y)
+GNUPG_CONF_OPTS += --enable-aes
+else
+GNUPG_CONF_OPTS += --disable-aes
+endif
+
 ifeq ($(BR2_PACKAGE_GNUPG_RSA),y)
 GNUPG_CONF_OPTS += --enable-rsa
 else
@@ -39,8 +45,7 @@ endif
 
 ifneq ($(BR2_PACKAGE_GNUPG_GPGV),y)
 define GNUPG_REMOVE_GPGV
-	rm -f $(TARGET_DIR)/usr/bin/gpgv \
-		$(TARGET_DIR)/usr/share/man/man1/gpgv.1
+	rm -f $(TARGET_DIR)/usr/bin/gpgv
 endef
 GNUPG_POST_INSTALL_TARGET_HOOKS += GNUPG_REMOVE_GPGV
 endif

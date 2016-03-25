@@ -1,2 +1,2 @@
-# From ftp://ftp.nluug.nl/pub/ImageMagick/digest.rdf
-sha256 a47f2731d453df502a93036ca1fea44c5852ed1b2c36af4343e6afb18652fefd ImageMagick-6.9.0-6.tar.xz
+# From http://www.imagemagick.org/download/releases/digest.rdf
+sha256	d127f76c674f1454adf0444ecec96f344c3dca522cc3320f0ef88d8060123048	ImageMagick-6.9.3-3.tar.xz

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WESTON_VERSION = 1.7.0
+WESTON_VERSION = 1.8.0
 WESTON_SITE = http://wayland.freedesktop.org/releases
 WESTON_SOURCE = weston-$(WESTON_VERSION).tar.xz
 WESTON_LICENSE = MIT
@@ -29,6 +29,13 @@ ifeq ($(BR2_PACKAGE_LIBUNWIND),y)
 WESTON_DEPENDENCIES += libunwind
 else
 WESTON_CONF_OPTS += --disable-libunwind
+endif
+
+ifeq ($(BR2_PACKAGE_WESTON_RDP),y)
+WESTON_DEPENDENCIES += freerdp
+WESTON_CONF_OPTS += --enable-rdp-compositor
+else
+WESTON_CONF_OPTS += --disable-rdp-compositor
 endif
 
 ifeq ($(BR2_PACKAGE_WESTON_FBDEV),y)

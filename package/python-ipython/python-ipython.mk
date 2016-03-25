@@ -12,6 +12,6 @@ PYTHON_IPYTHON_SITE_METHOD=local
 PYTHON_IPYTHON_LICENSE = BSD-3c
 PYTHON_IPYTHON_LICENSE_FILES = COPYING.rst
 PYTHON_IPYTHON_SETUP_TYPE = distutils
-PYTHON_IPYTHON_DEPENDENCIES = python-pyzmq python-tornado python-additional
+PYTHON_IPYTHON_DEPENDENCIES = python-pyzmq python-tornado python-jinja2
 
 $(eval $(python-package))

@@ -4,14 +4,14 @@
 #
 ################################################################################
 
-LIBCURL_VERSION = 7.39.0
+LIBCURL_VERSION = 7.47.1
 LIBCURL_SOURCE = curl-$(LIBCURL_VERSION).tar.bz2
 LIBCURL_SITE = http://curl.haxx.se/download
 LIBCURL_DEPENDENCIES = host-pkgconf \
 	$(if $(BR2_PACKAGE_ZLIB),zlib) \
 	$(if $(BR2_PACKAGE_LIBIDN),libidn) \
 	$(if $(BR2_PACKAGE_RTMPDUMP),rtmpdump)
-LIBCURL_LICENSE = ICS
+LIBCURL_LICENSE = ISC
 LIBCURL_LICENSE_FILES = COPYING
 LIBCURL_INSTALL_STAGING = YES
 
@@ -20,7 +20,7 @@ LIBCURL_INSTALL_STAGING = YES
 # probably almost never used. See
 # http://curl.haxx.se/docs/manpage.html#--ntlm.
 LIBCURL_CONF_OPTS = --disable-verbose --disable-manual --disable-ntlm-wb \
-	--enable-hidden-symbols --with-random=/dev/urandom
+	--enable-hidden-symbols --with-random=/dev/urandom --disable-curldebug
 LIBCURL_CONFIG_SCRIPTS = curl-config
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
@@ -30,7 +30,7 @@ LIBCURL_CONF_ENV += ac_cv_lib_crypto_CRYPTO_lock=yes
 # native stuff during the rest of configure when target == host.
 # Fix it by setting LD_LIBRARY_PATH to something sensible so those libs
 # are found first.
-LIBCURL_CONF_ENV += LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/lib:/usr/lib
+LIBCURL_CONF_ENV += LD_LIBRARY_PATH=$(if $(LD_LIBRARY_PATH),$(LD_LIBRARY_PATH):)/lib:/usr/lib
 LIBCURL_CONF_OPTS += --with-ssl=$(STAGING_DIR)/usr \
 	--with-ca-path=/etc/ssl/certs
 else ifeq ($(BR2_PACKAGE_GNUTLS),y)
@@ -44,6 +44,13 @@ else
 # polarssl support needs 1.3.x
 LIBCURL_CONF_OPTS += --without-ssl --without-gnutls \
 	--without-polarssl --without-nss
+endif
+
+ifeq ($(BR2_PACKAGE_C_ARES),y)
+LIBCURL_DEPENDENCIES += c-ares
+LIBCURL_CONF_OPTS += --enable-ares
+else
+LIBCURL_CONF_OPTS += --disable-ares
 endif
 
 # Configure curl to support libssh2
@@ -67,8 +74,3 @@ LIBCURL_POST_INSTALL_TARGET_HOOKS += LIBCURL_TARGET_CLEANUP
 endif
 
 $(eval $(autotools-package))
-
-curl: libcurl
-curl-clean: libcurl-clean
-curl-dirclean: libcurl-dirclean
-curl-source: libcurl-source

@@ -18,6 +18,30 @@ config BR2_EXTERNAL
 	string
 	option env="BR2_EXTERNAL"
 
+# Hidden config symbols for packages to check system gcc version
+config BR2_HOST_GCC_VERSION
+	string
+	option env="HOST_GCC_VERSION"
+
+config BR2_HOST_GCC_AT_LEAST_4_7
+	bool
+	default y if BR2_HOST_GCC_VERSION = "4 7"
+
+config BR2_HOST_GCC_AT_LEAST_4_8
+	bool
+	default y if BR2_HOST_GCC_VERSION = "4 8"
+	select BR2_HOST_GCC_AT_LEAST_4_7
+
+config BR2_HOST_GCC_AT_LEAST_4_9
+	bool
+	default y if BR2_HOST_GCC_VERSION = "4 9"
+	select BR2_HOST_GCC_AT_LEAST_4_8
+
+config BR2_HOST_GCC_AT_LEAST_5
+	bool
+	default y if BR2_HOST_GCC_VERSION = "5"
+	select BR2_HOST_GCC_AT_LEAST_4_9
+
 # Hidden boolean selected by packages in need of Java in order to build
 # (example: xbmc)
 config BR2_NEEDS_HOST_JAVA
@@ -165,10 +189,10 @@ config BR2_PRIMARY_SITE
 	  Primary site to download from. If this option is set then buildroot
 	  will try to download package source first from this site and try the
 	  default if the file is not found.
-	  Valid URIs are URIs recognized by $(WGET) and scp URIs of the form
-	  scp://[user@]host:path.
-	  NOTE: This works for all packages using the central package
-	  infrastructure (generic, autotools, cmake, ...)
+	  Valid URIs are:
+	    - URIs recognized by $(WGET)
+	    - local URIs of the form file://absolutepath
+	    - scp URIs of the form scp://[user@]host:path.
 
 config BR2_PRIMARY_SITE_ONLY
 	bool "Only allow downloads from primary download site"
@@ -220,8 +244,6 @@ config BR2_GNU_MIRROR
 	     http://ftp.gnu.org/pub/gnu
 	     http://mirror.aarnet.edu.au/pub/gnu
 
-endif
-
 config BR2_LUAROCKS_MIRROR
 	string "LuaRocks mirror"
 	default "http://rocks.moonscript.org"
@@ -240,6 +262,8 @@ config BR2_CPAN_MIRROR
 
 	  The list of mirrors is available at:
 	  http://search.cpan.org/mirror
+
+endif
 
 endmenu
 
@@ -288,6 +312,33 @@ config BR2_CCACHE_INITIAL_SETUP
 
 	  These initial settings are applied after ccache has been compiled.
 
+config BR2_CCACHE_USE_BASEDIR
+	bool "Use relative paths"
+	default y
+	help
+	  Allow ccache to convert absolute paths within the output
+	  directory into relative paths.
+
+	  During the build, many -I include directives are given with
+	  an absolute path. These absolute paths end up in the hashes
+	  that are computed by ccache. Therefore, when you build from a
+	  different directory, the hash will be different and the
+	  cached object will not be used.
+
+	  To improve cache performance, set this option to y. This
+	  allows ccache to rewrite absolute paths within the output
+	  directory into relative paths. Note that only paths within
+	  the output directory will be rewritten; therefore, if you
+	  change BR2_HOST_DIR to point outside the output directory and
+	  subsequently move it to a different location, this will lead
+	  to cache misses.
+
+	  This option has as a result that the debug information in the
+	  object files also has only relative paths. Therefore, make
+	  sure you cd to the build directory before starting gdb. See
+	  the section "COMPILING IN DIFFERENT DIRECTORIES" in the
+	  ccache manual for more information.
+
 endif
 
 config BR2_DEPRECATED
@@ -298,19 +349,19 @@ config BR2_DEPRECATED
 
 if BR2_DEPRECATED
 
-config BR2_DEPRECATED_SINCE_2013_11
+config BR2_DEPRECATED_SINCE_2015_05
 	bool
 	default y
 
-config BR2_DEPRECATED_SINCE_2014_02
+config BR2_DEPRECATED_SINCE_2015_08
 	bool
 	default y
 
-config BR2_DEPRECATED_SINCE_2014_05
+config BR2_DEPRECATED_SINCE_2015_11
 	bool
 	default y
 
-config BR2_DEPRECATED_SINCE_2014_08
+config BR2_DEPRECATED_SINCE_2016_02
 	bool
 	default y
 
@@ -366,19 +417,6 @@ config BR2_STRIP_strip
 	help
 	  Binaries and libraries in the target filesystem will be
 	  stripped using the normal 'strip' command. This allows to
-	  save space, mainly by removing debugging symbols. Debugging
-	  symbols on the target are needed for native debugging, but
-	  not when remote debugging is used.
-
-config BR2_STRIP_sstrip
-	bool "sstrip"
-	select BR2_PACKAGE_SSTRIP_HOST
-	depends on !BR2_PACKAGE_HOST_ELF2FLT
-	depends on BR2_DEPRECATED_SINCE_2014_05
-	help
-	  Binaries and libraries in the target filesystem will be
-	  stripped using the 'sstrip' command, which strips a little
-	  bit more than the traditional 'strip' command. This allows to
 	  save space, mainly by removing debugging symbols. Debugging
 	  symbols on the target are needed for native debugging, but
 	  not when remote debugging is used.
@@ -508,12 +546,13 @@ config BR2_GOOGLE_BREAKPAD_INCLUDE_FILES
 
 endif
 
-config BR2_ENABLE_SSP
+choice
 	bool "build code with Stack Smashing Protection"
+	default BR2_SSP_ALL if BR2_ENABLE_SSP # legacy
 	depends on BR2_TOOLCHAIN_HAS_SSP
 	help
-	  Enable stack smashing protection support using GCCs
-	  -fstack-protector-all option.
+	  Enable stack smashing protection support using GCC's
+	  -fstack-protector option family.
 
 	  See http://www.linuxfromscratch.org/hints/downloads/files/ssp.txt
 	  for details.
@@ -522,22 +561,84 @@ config BR2_ENABLE_SSP
 	  support. This is always the case for glibc and eglibc
 	  toolchain, but is optional in uClibc toolchains.
 
-comment "enabling Stack Smashing Protection requires support in the toolchain"
+config BR2_SSP_NONE
+	bool "None"
+	help
+	  Disable stack-smashing protection.
+
+config BR2_SSP_REGULAR
+	bool "-fstack-protector"
+	help
+	  Emit extra code to check for buffer overflows, such as stack
+	  smashing attacks. This is done by adding a guard variable to
+	  functions with vulnerable objects. This includes functions
+	  that call alloca, and functions with buffers larger than 8
+	  bytes. The guards are initialized when a function is entered
+	  and then checked when the function exits. If a guard check
+	  fails, an error message is printed and the program exits.
+
+config BR2_SSP_STRONG
+	bool "-fstack-protector-strong"
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_9
+	help
+	  Like -fstack-protector but includes additional functions to be
+	  protected - those that have local array definitions, or have
+	  references to local frame addresses.
+
+comment "Stack Smashing Protection strong needs a toolchain w/ gcc >= 4.9"
+	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_4_9
+
+config BR2_SSP_ALL
+	bool "-fstack-protector-all"
+	help
+	  Like -fstack-protector except that all functions are
+	  protected. This option might have a significant performance
+	  impact on the compiled binaries.
+
+endchoice
+
+comment "Stack Smashing Protection needs a toolchain w/ SSP"
 	depends on !BR2_TOOLCHAIN_HAS_SSP
 
-config BR2_PREFER_STATIC_LIB
-	bool "build statically linked applications, no dynamic libraries"
+choice
+	bool "libraries"
+	default BR2_SHARED_LIBS if BR2_BINFMT_SUPPORTS_SHARED
+	default BR2_STATIC_LIBS if !BR2_BINFMT_SUPPORTS_SHARED
 	help
-	  Build all applications for the target statically linked.
-	  This potentially increases your filesystem size and should only be
-	  used if you know what you do.
+	  Select the type of libraries you want to use on the target.
 
-	  Note that some applications cannot be build statically and so are
-	  intentionally disabled.
+	  The default is to build dynamic libraries and use those on
+	  the target filesystem, except when the architecture and/or
+	  the selected binary format does not support shared
+	  libraries.
 
-	  The default (if this option is disabled) is to build dynamic
-	  libraries and dynamically link applications to use those on the
-	  target filesystem.
+config BR2_STATIC_LIBS
+	bool "static only"
+	help
+	  Build and use only static libraries. No shared libraries
+	  will be instaled on the target. This potentially increases
+	  your code size and should only be used if you know what you
+	  are doing. Note that some packages may not be available when
+	  this option is enabled, due to their need for dynamic
+	  library support.
+
+config BR2_SHARED_LIBS
+	bool "shared only"
+	depends on BR2_BINFMT_SUPPORTS_SHARED
+	help
+	  Build and use only shared libraries. This is the recommended
+	  solution as it saves space and build time.
+
+config BR2_SHARED_STATIC_LIBS
+	bool "both static and shared"
+	depends on BR2_BINFMT_SUPPORTS_SHARED
+	help
+	  Build both shared and static libraries, but link executables
+	  dynamically. While building both shared and static libraries
+	  take more time and more disk space, having static libraries
+	  may be useful to link some of the applications statically.
+
+endchoice
 
 
 config BR2_PACKAGE_OVERRIDE_FILE
@@ -568,6 +669,26 @@ config BR2_GLOBAL_PATCH_DIR
 
 	  Otherwise, if the directory <global-patch-dir>/<packagename> exists,
 	  then all *.patch files in the directory will be applied.
+
+menu "Advanced"
+
+config BR2_COMPILER_PARANOID_UNSAFE_PATH
+	bool "paranoid check of library/header paths"
+	help
+	  By default, when this option is disabled, when the Buildroot
+	  cross-compiler will encounter an unsafe library or header
+	  path (such as /usr/include, or /usr/lib), the compiler will
+	  display a warning.
+
+	  By enabling this option, this warning is turned into an
+	  error, which will completely abort the build when such
+	  unsafe paths are encountered.
+
+	  Note that this mechanism is available for both the internal
+	  toolchain (through gcc and binutils patches) and external
+	  toolchain backends (through the external toolchain wrapper).
+
+endmenu
 
 endmenu
 
