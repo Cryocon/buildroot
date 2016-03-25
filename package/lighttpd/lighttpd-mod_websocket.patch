@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index 25e6b71..7d87ac2 100644
+index e5d15da..51a7a91 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -710,6 +710,32 @@ dnl build version-id
+@@ -632,6 +632,32 @@ dnl build version-id
  LIGHTTPD_VERSION_ID=`echo $PACKAGE_VERSION | $AWK -F '.' '{print "(" $1 " << 16 | " $2 " << 8 | " $3 ")"}'`
  AC_DEFINE_UNQUOTED([LIGHTTPD_VERSION_ID], [$LIGHTTPD_VERSION_ID], [lighttpd-version-id])
  
@@ -35,7 +35,7 @@ index 25e6b71..7d87ac2 100644
  AC_CONFIG_FILES([Makefile src/Makefile
  		 doc/config/conf.d/Makefile \
  		 doc/config/vhosts.d/Makefile \
-@@ -842,6 +868,13 @@ else
+@@ -764,6 +790,13 @@ else
  	disable_feature="$disable_feature $features"
  fi
  
@@ -50,11 +50,11 @@ index 25e6b71..7d87ac2 100644
  dnl output
  
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 906823e..89bd455 100644
+index 367f5d9..27b9db3 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -267,6 +267,14 @@ mod_accesslog_la_SOURCES = mod_accesslog.c
- mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version
+@@ -265,6 +265,14 @@ mod_accesslog_la_SOURCES = mod_accesslog.c
+ mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version -no-undefined
  mod_accesslog_la_LIBADD = $(common_libadd)
  
 +if WITH_WEBSOCKET
@@ -66,13 +66,13 @@ index 906823e..89bd455 100644
 +mod_websocket_la_LIBADD = $(PCRE_LIB) $(common_libadd)
 +endif
  
- hdr = server.h base64.h buffer.h network.h log.h keyvalue.h \
- 	response.h request.h fastcgi.h chunk.h \
+ hdr = server.h buffer.h network.h log.h keyvalue.h \
+       response.h request.h fastcgi.h chunk.h \
 diff --git a/src/base.h b/src/base.h
-index 4c748a5..c1d6e3c 100644
+index 66710f1..6d78b83 100644
 --- a/src/base.h
 +++ b/src/base.h
-@@ -340,7 +340,8 @@ typedef enum {
+@@ -337,7 +337,8 @@ typedef enum {
  	CON_STATE_WRITE,
  	CON_STATE_RESPONSE_END,
  	CON_STATE_ERROR,
@@ -103,10 +103,10 @@ index 5ef7a1e..90fb7d4 100644
  	}
  }
 diff --git a/src/connections.c b/src/connections.c
-index 1e225d9..d3bd5bb 100644
+index 8a2774d..6fb0f27 100644
 --- a/src/connections.c
 +++ b/src/connections.c
-@@ -1002,6 +1002,8 @@ found_header_end:
+@@ -1152,6 +1152,8 @@ found_header_end:
  		}
  
  		break;
@@ -115,7 +115,7 @@ index 1e225d9..d3bd5bb 100644
  	default: break;
  	}
  
-@@ -1076,7 +1078,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
+@@ -1226,7 +1228,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
  	}
  
  	if (con->state == CON_STATE_READ ||
@@ -125,8 +125,8 @@ index 1e225d9..d3bd5bb 100644
  		connection_handle_read_state(srv, con);
  	}
  
-@@ -1330,6 +1333,9 @@ int connection_state_machine(server *srv, connection *con) {
- 				/* fallthrough */
+@@ -1479,6 +1482,9 @@ int connection_state_machine(server *srv, connection *con) {
+ 				done = -1;
  			case HANDLER_WAIT_FOR_EVENT:
  				/* come back here */
 +				if (con->state == CON_STATE_READ_CONTINUOUS) {
@@ -135,7 +135,7 @@ index 1e225d9..d3bd5bb 100644
  				connection_set_state(srv, con, CON_STATE_HANDLE_REQUEST);
  
  				break;
-@@ -1469,12 +1475,16 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1618,12 +1624,16 @@ int connection_state_machine(server *srv, connection *con) {
  			break;
  		case CON_STATE_READ_POST:
  		case CON_STATE_READ:
@@ -152,7 +152,7 @@ index 1e225d9..d3bd5bb 100644
  			break;
  		case CON_STATE_WRITE:
  			if (srv->srvconf.log_state_handling) {
-@@ -1639,6 +1649,9 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1792,6 +1802,9 @@ int connection_state_machine(server *srv, connection *con) {
  			fdevent_event_del(srv->ev, &(con->fde_ndx), con->fd);
  		}
  		break;
@@ -164,10 +164,10 @@ index 1e225d9..d3bd5bb 100644
  		break;
 diff --git a/src/mod_websocket.c b/src/mod_websocket.c
 new file mode 100644
-index 0000000..e556b14
+index 0000000..34e831d
 --- /dev/null
 +++ b/src/mod_websocket.c
-@@ -0,0 +1,879 @@
+@@ -0,0 +1,838 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -349,7 +349,7 @@ index 0000000..e556b14
 +                      info.peer.addr, ":", info.peer.port, "( fd =", hctx->con->fd, ") ->",
 +                      host->ptr, ":", port->ptr, "( fd =", hctx->fd, ")");
 +        } else {
-+            DEBUG_LOG(MOD_WEBSOCKET_LOG_INFO, "s", "connected");
++            DEBUG_LOG(MOD_WEBSOCKET_LOG_INFO, "ss", "connected");
 +        }
 +    }
 +    buffer_free(port);
@@ -510,43 +510,6 @@ index 0000000..e556b14
 +        log_error_write(srv, __FILE__, __LINE__, "sss",
 +                        con->uri.path->ptr, "is match WebSocket extension:", ext->key->ptr);
 +    }
-+
-+    array *hdrs = NULL;
-+    data_string *hdr = NULL;
-+    buffer *connection_hdr_value = NULL;
-+    buffer *upgrade_hdr_value = NULL;
-+
-+    hdrs = con->request.headers;
-+    for (i = hdrs->used; i > 0; i--) {
-+        hdr = (data_string *)hdrs->data[i - 1];
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Connection"))) {
-+            connection_hdr_value = buffer_init_buffer(hdr->value);
-+            buffer_to_lower(connection_hdr_value);
-+        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Upgrade"))) {
-+            upgrade_hdr_value = buffer_init_buffer(hdr->value);
-+            buffer_to_lower(upgrade_hdr_value);
-+        }
-+    }
-+    /*
-+     * Connection: upgrade, keep-alive, ...
-+     * Upgrade: WebSocket, ...
-+     */
-+    if (buffer_is_empty(connection_hdr_value) ||
-+        buffer_is_empty(upgrade_hdr_value) ||
-+        strstr(connection_hdr_value->ptr, "upgrade") == NULL ||
-+        strstr(upgrade_hdr_value->ptr, "websocket") == NULL) {
-+        if (p->conf.debug >= MOD_WEBSOCKET_LOG_INFO) {
-+            log_error_write(srv, __FILE__, __LINE__, "ss",
-+                            con->uri.path->ptr, "is not WebSocket Request");
-+        }
-+        buffer_free(connection_hdr_value);
-+        buffer_free(upgrade_hdr_value);
-+        return HANDLER_GO_ON;
-+    }
-+    buffer_free(connection_hdr_value);
-+    buffer_free(upgrade_hdr_value);
-+
 +    /* init handler-context */
 +    hctx = handler_ctx_init();
 +    if (!hctx) {
@@ -644,7 +607,7 @@ index 0000000..e556b14
 +        p->config_storage[i] = s;
 +
 +        ca = ((data_config *)(srv->config_context->data[i]))->value;
-+        if (config_insert_values_global(srv, ca, cv, i == 0 ? T_CONFIG_SCOPE_SERVER : T_CONFIG_SCOPE_CONNECTION) != 0) {
++        if (config_insert_values_global(srv, ca, cv) != 0) {
 +            log_error_write(srv, __FILE__, __LINE__, "s", "no memory.");
 +            return HANDLER_ERROR;
 +        }
@@ -688,7 +651,9 @@ index 0000000..e556b14
 +        /* check request */
 +        err = mod_websocket_handshake_check_request(hctx);
 +        /* not my job */
-+        if (err != MOD_WEBSOCKET_OK) {
++        if (err == MOD_WEBSOCKET_PRECONDITION_FAILED) {
++            return HANDLER_GO_ON;
++        } else if (err != MOD_WEBSOCKET_OK) {
 +            hctx->con->http_status = err;
 +            hctx->con->mode = DIRECT;
 +            return HANDLER_FINISHED;
@@ -825,9 +790,6 @@ index 0000000..e556b14
 +            if (!chunkqueue_is_empty(hctx->fromcli)) {
 +                hctx->timeout_cnt = 0;
 +                if (mod_websocket_frame_recv(hctx) < 0) {
-+                    if (hctx->mode == MOD_WEBSOCKET_WEBSOCKET_PROXY) {
-+                        break;
-+                    }
 +                    if (((server_socket *)(hctx->con->srv_socket))->is_ssl) {
 +
 +#ifdef	USE_OPENSSL
@@ -868,9 +830,6 @@ index 0000000..e556b14
 +        }
 +        if (hctx->fd < 0) {
 +            chunkqueue_reset(hctx->tocli);
-+            if (hctx->mode == MOD_WEBSOCKET_WEBSOCKET_PROXY) {
-+                break;
-+            }
 +            if (((server_socket *)(hctx->con->srv_socket))->is_ssl) {
 +
 +#ifdef	USE_OPENSSL
@@ -1049,10 +1008,10 @@ index 0000000..e556b14
 +/* EOF */
 diff --git a/src/mod_websocket.h b/src/mod_websocket.h
 new file mode 100644
-index 0000000..d6b69bb
+index 0000000..1b36a22
 --- /dev/null
 +++ b/src/mod_websocket.h
-@@ -0,0 +1,213 @@
+@@ -0,0 +1,214 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + *
@@ -1125,6 +1084,7 @@ index 0000000..d6b69bb
 +    GEN(BAD_REQUEST, 400)               \
 +    GEN(FORBIDDEN, 403)                 \
 +    GEN(NOT_FOUND, 404)                 \
++    GEN(PRECONDITION_FAILED, 412)       \
 +    GEN(INTERNAL_SERVER_ERROR, 500)     \
 +    GEN(SERVICE_UNAVAILABLE, 503)
 +
@@ -2016,10 +1976,10 @@ index 0000000..ac43f13
 +}
 diff --git a/src/mod_websocket_handshake.c b/src/mod_websocket_handshake.c
 new file mode 100644
-index 0000000..8b449e5
+index 0000000..100795e
 --- /dev/null
 +++ b/src/mod_websocket_handshake.c
-@@ -0,0 +1,547 @@
+@@ -0,0 +1,565 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -2171,6 +2131,8 @@ index 0000000..8b449e5
 +    array *hdrs;
 +    data_string *hdr = NULL;
 +    mod_websocket_handshake_t *handshake;
++    buffer *connection_hdr_value = NULL;
++    buffer *upgrade_hdr_value = NULL;
 +    buffer *version_hdr_value = NULL;
 +
 +    if (hctx == NULL || hctx->con == NULL) {
@@ -2182,6 +2144,12 @@ index 0000000..8b449e5
 +    /* store necessary headers */
 +    for (i = hdrs->used; i > 0; i--) {
 +        hdr = (data_string *)hdrs->data[i - 1];
++        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Connection"))) {
++            connection_hdr_value = hdr->value;
++        }
++        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Upgrade"))) {
++            upgrade_hdr_value = hdr->value;
++        }
 +        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Host"))) {
 +            handshake->host = hdr->value;
 +        }
@@ -2208,6 +2176,16 @@ index 0000000..8b449e5
 +        }
 +#endif	/* _MOD_WEBSOCKET_SPEC_RFC_6455_ */
 +
++    }
++    /* check store headers */
++    if (buffer_is_empty(connection_hdr_value) || buffer_is_empty(upgrade_hdr_value)) {
++        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "not WebSocket request");
++        return MOD_WEBSOCKET_PRECONDITION_FAILED;
++    }
++    /* firefox: Connection: upgrade, keep-alive */
++    if (strcasestr(connection_hdr_value->ptr, "upgrade") == NULL) {
++        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "not WebSocket request");
++        return MOD_WEBSOCKET_PRECONDITION_FAILED;
 +    }
 +    if (buffer_is_empty(handshake->host)) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "Host header does not exist");
@@ -2821,10 +2799,10 @@ index 0000000..fb400fc
 +#endif
 diff --git a/src/mod_websocket_socket.c b/src/mod_websocket_socket.c
 new file mode 100644
-index 0000000..6a17207
+index 0000000..020c00d
 --- /dev/null
 +++ b/src/mod_websocket_socket.c
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,136 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -2839,7 +2817,6 @@ index 0000000..6a17207
 +#include <sys/socket.h>
 +#include <netdb.h>
 +#include <errno.h>
-+#include <poll.h>
 +
 +#include "mod_websocket_socket.h"
 +
@@ -2847,51 +2824,84 @@ index 0000000..6a17207
 +    struct addrinfo hints;
 +    struct addrinfo *res = NULL;
 +    struct addrinfo *ai = NULL;
-+    int flags, fd = -1, sockret = -1;
++    struct fdlist {
++        int fd;
++        struct fdlist *next;
++    };
++    struct fdlist *head = NULL, *p, *pn, *fde = NULL;
++    int flags, fd, maxfd = -1, connfd = -1, sockret = -1;
 +    socklen_t socklen = sizeof(sockret);
-+    struct pollfd pollfd;
++    fd_set fds;
++    struct timeval tv;
 +
 +    memset(&hints, 0, sizeof(hints));
 +    hints.ai_family = AF_UNSPEC;
 +    hints.ai_socktype = SOCK_STREAM;
 +    hints.ai_flags = 0;
++
 +    if (getaddrinfo(host, service, &hints, &res) != 0) {
 +        return -1;
 +    }
++    FD_ZERO(&fds);
 +    for (ai = res; ai; ai = ai->ai_next) {
 +        fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 +        if (fd < 0) {
-+            break;
++            goto go_out;
 +        }
 +        if ((flags = fcntl(fd, F_GETFL, 0)) < 0 ||
 +            fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
 +            close(fd);
-+            fd = -1;
-+            continue;
++            goto go_out;
 +        }
-+        pollfd.fd = fd;
-+        pollfd.events = POLLOUT;
-+        if (connect(fd, ai->ai_addr, ai->ai_addrlen) < 0 &&
-+            errno != EINPROGRESS) {
++        fde = (struct fdlist *)malloc(sizeof(struct fdlist));
++        if (!fde) {
 +            close(fd);
-+            fd = -1;
-+            continue;
++            goto go_out;
 +        }
-+        if (poll(&pollfd, 1, 5000) == 0) {
-+            close(fd);
-+            fd = -1;
-+            continue;
++        fde->fd = fd;
++        fde->next = head;
++        head = fde;
++        if (fde->fd > maxfd) {
++            maxfd = fde->fd;
 +        }
-+        if ((pollfd.revents & POLLOUT) &&
-+            getsockopt(fd, SOL_SOCKET, SO_ERROR, &sockret, &socklen) == 0 &&
-+            sockret == 0 ) {
-+            break;
++        FD_SET(fde->fd, &fds);
++        if (connect(fde->fd, ai->ai_addr, ai->ai_addrlen) < 0) {
++            if (errno != EINPROGRESS) {
++                goto go_out;
++            }
 +        }
-+        close(fd);
-+        fd = -1;
++    }
++    /* connect timeout is to set 5 secs */
++    tv.tv_sec = 5;
++    tv.tv_usec = 0;
++    if (select(maxfd + 1, NULL, &fds, NULL, &tv) == 0) {
++        goto go_out;
++    } else {
++        for (p = head; p; p = p->next) {
++            if (!FD_ISSET(p->fd, &fds)) {
++                continue;
++            }
++            if (getsockopt(p->fd, SOL_SOCKET, SO_ERROR,
++                           &sockret, &socklen) == 0 &&
++                sockret == 0) {
++                connfd = p->fd;
++                break;
++            }
++        }
++    }
++
++ go_out:
++    p = head;
++    while (p) {
++        if (p->fd != connfd) {
++            close(p->fd);
++        }
++        pn = p->next;
++        free(p);
++        p = pn;
 +    }
 +    freeaddrinfo(res);
-+    return fd;
++    return connfd;
 +}
 +
 +void mod_websocket_disconnect(int fd) {
@@ -2994,18 +3004,18 @@ index 0000000..7831c0e
 +
 +#endif  /* _MOD_WEBSOCKET_SOCKET_H_ */
 diff --git a/src/plugin.c b/src/plugin.c
-index a55b09c..080faad 100644
+index 55f8b03..ae4b6ae 100644
 --- a/src/plugin.c
 +++ b/src/plugin.c
-@@ -45,6 +45,7 @@ typedef enum {
- 	PLUGIN_FUNC_INIT,
- 	PLUGIN_FUNC_CLEANUP,
- 	PLUGIN_FUNC_SET_DEFAULTS,
-+	PLUGIN_FUNC_READ_CONTINUOUS,
+@@ -44,6 +44,7 @@ typedef enum {
+ 		PLUGIN_FUNC_INIT,
+ 		PLUGIN_FUNC_CLEANUP,
+ 		PLUGIN_FUNC_SET_DEFAULTS,
++		PLUGIN_FUNC_READ_CONTINUOUS,
  
- 	PLUGIN_FUNC_SIZEOF
+ 		PLUGIN_FUNC_SIZEOF
  } plugin_t;
-@@ -328,6 +329,7 @@ PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_JOBLIST, handle_joblist)
+@@ -274,6 +275,7 @@ PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_JOBLIST, handle_joblist)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_DOCROOT, handle_docroot)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_PHYSICAL, handle_physical)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_CONNECTION_RESET, connection_reset)
@@ -3013,7 +3023,7 @@ index a55b09c..080faad 100644
  
  #undef PLUGIN_TO_SLOT
  
-@@ -457,6 +459,7 @@ handler_t plugins_call_init(server *srv) {
+@@ -403,6 +405,7 @@ handler_t plugins_call_init(server *srv) {
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_DOCROOT, handle_docroot);
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_PHYSICAL, handle_physical);
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_CONNECTION_RESET, connection_reset);
@@ -3022,7 +3032,7 @@ index a55b09c..080faad 100644
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_SET_DEFAULTS, set_defaults);
  #undef PLUGIN_TO_SLOT
 diff --git a/src/plugin.h b/src/plugin.h
-index 7353362..95f314a 100644
+index cadce54..80b8df3 100644
 --- a/src/plugin.h
 +++ b/src/plugin.h
 @@ -23,6 +23,7 @@
