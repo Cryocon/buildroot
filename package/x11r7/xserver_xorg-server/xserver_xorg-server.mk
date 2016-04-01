@@ -59,6 +59,7 @@ XSERVER_XORG_SERVER_DEPENDENCIES = 	\
 # Segfault in libfb.so:fbGlyphs() can be produced using -Os with gcc 4.9/5, 
 # see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63346 for details
 
+XSERVER_XORG_SERVER_CFLAGS := $(TARGET_CFLAGS)
 ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_9)$(BR2_arm)$(BR2_armeb),yy)
 XSERVER_XORG_SERVER_CFLAGS += -O1
 endif
@@ -69,7 +70,7 @@ XSERVER_XORG_SERVER_CONF_OPTS = \
 	--disable-xephyr \
 	--disable-dmx \
 	--with-builder-addr=buildroot@buildroot.org \
-	CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/pixman-1" \
+	CFLAGS="$(XSERVER_XORG_SERVER_CFLAGS) -I$(STAGING_DIR)/usr/include/pixman-1" \
 	--with-fontrootdir=/usr/share/fonts/X11/ \
 	--$(if $(BR2_PACKAGE_XSERVER_XORG_SERVER_XVFB),en,dis)able-xvfb
 
