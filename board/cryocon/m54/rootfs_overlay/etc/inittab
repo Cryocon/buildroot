@@ -22,13 +22,19 @@ null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
+::sysinit:/sbin/modprobe -a atmel-hlcdc-dc ft5x06-ts pwm-atmel-hlcdc
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
 
+::sysinit:/sbin/modprobe xilinx-sscu
+::sysinit:/usr/bin/load_fpga /boot/fpga1.bit /dev/fpga1
+::sysinit:/sbin/modprobe -r xilinx-sscu
 ::sysinit:/sbin/modprobe -a spi-atmel
 
+::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
+::respawn:/usr/bin/Xorg
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
