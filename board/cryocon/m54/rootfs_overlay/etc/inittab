@@ -21,8 +21,11 @@ null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
 null::sysinit:/bin/mount -a
+::sysinit:/usr/bin/head -1 /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
+::sysinit:/usr/bin/psplash -n &
+::sysinit:/bin/echo 6 > /sys/class/backlight/backlight/brightness
 null::sysinit:/bin/hostname -F /etc/hostname
-::sysinit:/sbin/modprobe -a atmel-hlcdc-dc ft5x06-ts pwm-atmel-hlcdc
+::once:/sbin/modprobe ft5x06-ts
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
@@ -34,7 +37,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 
 ::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
-::respawn:/usr/bin/Xorg
+::respawn:/usr/bin/Xorg -background none
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
