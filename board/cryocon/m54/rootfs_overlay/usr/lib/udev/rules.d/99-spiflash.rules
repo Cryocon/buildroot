@@ -1,0 +1,3 @@
+IMPORT{builtin}="path_id"
+ACTION=="add", ATTR{name}=="spi?*", SUBSYSTEM=="mtd", SYMLINK+="mtd-$attr{name}"
+
