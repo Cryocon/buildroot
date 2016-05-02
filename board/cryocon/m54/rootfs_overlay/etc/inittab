@@ -33,7 +33,8 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::sysinit:/sbin/modprobe xilinx-sscu
 ::sysinit:/usr/bin/load_fpga /boot/fpga1.bit /dev/fpga1
 ::sysinit:/sbin/modprobe -r xilinx-sscu
-::sysinit:/sbin/modprobe -a spi-atmel
+::sysinit:/sbin/modprobe rtc-at91rm9200
+::sysinit:/sbin/modprobe spi-atmel
 
 ::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
