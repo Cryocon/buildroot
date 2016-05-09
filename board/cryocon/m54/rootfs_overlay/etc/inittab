@@ -16,7 +16,6 @@
 # Startup the system
 null::sysinit:/bin/mount -t proc proc /proc
 #null::sysinit:/bin/mount -o remount,rw / # REMOUNT_ROOTFS_RW
-#null::sysinit:/bin/mount -t devtmpfs dev /dev
 null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
@@ -33,11 +32,13 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::sysinit:/sbin/modprobe xilinx-sscu
 ::sysinit:/usr/bin/load_fpga /boot/fpga1.bit /dev/fpga1
 ::sysinit:/sbin/modprobe -r xilinx-sscu
+
 ::sysinit:/sbin/modprobe rtc-at91rm9200
+::sysinit:/sbin/modprobe uio_pdrv_genirq of_id="adc_rdy_n,uio-pdrv-genirq"
 ::sysinit:/sbin/modprobe spi-atmel
 
-::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
+::sysinit:/bin/mkdir -p /tmp/.X11-unix
 ::respawn:/usr/bin/Xorg -background none
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
