@@ -16,7 +16,6 @@
 # Startup the system
 null::sysinit:/bin/mount -t proc proc /proc
 #null::sysinit:/bin/mount -o remount,rw / # REMOUNT_ROOTFS_RW
-#null::sysinit:/bin/mount -t devtmpfs dev /dev
 null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
 ::sysinit:/sbin/fsck -p /dev/mmcblk0p3
@@ -25,6 +24,10 @@ null::sysinit:/bin/hostname -F /etc/hostname
 
 # now run any rc scripts
 ::once:/etc/init.d/rcS
+
+::sysinit:/sbin/modprobe rtc-at91rm9200
+::sysinit:/sbin/modprobe uio_pdrv_genirq of_id="adc_rdy_n,uio-pdrv-genirq"
+::sysinit:/sbin/modprobe spi-atmel
 
 ::respawn:/usr/bin/cryocond
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
@@ -39,6 +42,7 @@ ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
 ::ctrlaltdel:/sbin/reboot
 
 # Stuff to do before rebooting
+null::shutdown:/sbin/modprobe at91-reset
 null::shutdown:/etc/init.d/rcK
 null::shutdown:/usr/bin/killall klogd
 null::shutdown:/usr/bin/killall syslogd
