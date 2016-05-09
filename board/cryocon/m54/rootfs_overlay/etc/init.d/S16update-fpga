@@ -1,0 +1,20 @@
+#!/bin/sh
+
+start() {
+	echo -n "Updating fpga0 (if needed): "
+	update-fpga0.sh &&
+		echo "OK" ||
+		echo "Failed"
+}
+
+case "$1" in
+  start|restart|reload)
+	start
+	;;
+  *)
+	echo "Usage: $0 {start}"
+	exit 1
+esac
+
+exit $?
+
