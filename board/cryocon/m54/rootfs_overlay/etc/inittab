@@ -29,6 +29,9 @@ null::sysinit:/bin/hostname -F /etc/hostname
 # now run any rc scripts
 ::once:/etc/init.d/rcS
 
+# must run after udev is started
+::once:/usr/bin/update-fpga0.sh
+
 ::sysinit:/sbin/modprobe xilinx-sscu
 ::sysinit:/usr/bin/load_fpga /boot/fpga1.bit /dev/fpga1
 ::sysinit:/sbin/modprobe -r xilinx-sscu
