@@ -5,7 +5,7 @@
 ################################################################################
 
 LIGHTTPD_VERSION_MAJOR = 1.4
-LIGHTTPD_VERSION = $(LIGHTTPD_VERSION_MAJOR).39
+LIGHTTPD_VERSION = $(LIGHTTPD_VERSION_MAJOR).35
 LIGHTTPD_SOURCE = lighttpd-$(LIGHTTPD_VERSION).tar.xz
 LIGHTTPD_SITE = http://download.lighttpd.net/lighttpd/releases-$(LIGHTTPD_VERSION_MAJOR).x
 LIGHTTPD_LICENSE = BSD-3c
@@ -13,7 +13,8 @@ LIGHTTPD_LICENSE_FILES = COPYING
 LIGHTTPD_DEPENDENCIES = host-pkgconf
 LIGHTTPD_CONF_OPTS = \
 	--libdir=/usr/lib/lighttpd \
-	--libexecdir=/usr/lib
+	--libexecdir=/usr/lib \
+	$(if $(BR2_LARGEFILE),,--disable-lfs)
 
 LIGHTTPD_CONF_OPTS += --with-websocket=all
 
