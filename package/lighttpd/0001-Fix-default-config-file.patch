@@ -53,8 +53,8 @@ diff -Nura lighttpd-1.4.37.orig/doc/config/lighttpd.conf lighttpd-1.4.37/doc/con
  ##
 -server.username  = "lighttpd"
 -server.groupname = "lighttpd"
-+server.username  = "www-data"
-+server.groupname = "www-data"
++# server.username  = "lighttpd"
++# server.groupname = "lighttpd"
  
  ## 
  ## enable core files.

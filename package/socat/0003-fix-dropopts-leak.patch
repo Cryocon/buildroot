@@ -1,0 +1,15 @@
+diff --git a/xioopts.c b/xioopts.c
+index 6c231f4..2dbfbc6 100644
+--- a/xioopts.c
++++ b/xioopts.c
+@@ -4260,8 +4260,9 @@ int _xio_openlate(struct single *xfd, struct opt *opts) {
+ int dropopts(struct opt *opts, unsigned int phase) {
+    struct opt *opt;
+ 
++   /*!*/
+    if (phase == PH_ALL) {
+-      opts[0].desc = ODESC_END;
++      free(opts);
+       return 0;
+    }
+    opt = opts; while (opt && opt->desc != ODESC_END) {
