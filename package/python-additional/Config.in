@@ -2,7 +2,8 @@ config BR2_PACKAGE_PYTHON_ADDITIONAL
 	bool "python-additional"
 	depends on BR2_PACKAGE_PYTHON
 	help
-	  Space-separated list of Python packages to fetch using pip.
+	  Fetch additional packages using pip (which are too obscure to be
+	  supported directly in Buildroot or have installation problems) 
 	select BR2_PACKAGE_PYTHON_FLASK
 	select BR2_PACKAGE_PYTHON_GEVENT
 	select BR2_PACKAGE_PYTHON_GUNICORN
@@ -12,4 +13,4 @@ config BR2_PACKAGE_PYTHON_ADDITIONAL_PACKAGES
 	string "python-additional-packages"
 	depends on BR2_PACKAGE_PYTHON_ADDITIONAL
 	help
-	  Space-separated list of Python packages to fetch using pip.
+	  Space-separated list of Python packages (or requirements) to pip install.
