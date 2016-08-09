@@ -1,12 +1,11 @@
 diff --git a/configure.ac b/configure.ac
-index 25e6b71..5814dfe 100644
+index e5d15da..51a7a91 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -710,6 +710,33 @@ dnl build version-id
+@@ -632,6 +632,32 @@ dnl build version-id
  LIGHTTPD_VERSION_ID=`echo $PACKAGE_VERSION | $AWK -F '.' '{print "(" $1 " << 16 | " $2 " << 8 | " $3 ")"}'`
  AC_DEFINE_UNQUOTED([LIGHTTPD_VERSION_ID], [$LIGHTTPD_VERSION_ID], [lighttpd-version-id])
  
-+
 +dnl check for websocket support
 +AC_C_BIGENDIAN
 +if test "x$ac_cv_c_bigendian" = "xyes"; then
@@ -36,7 +35,7 @@ index 25e6b71..5814dfe 100644
  AC_CONFIG_FILES([Makefile src/Makefile
  		 doc/config/conf.d/Makefile \
  		 doc/config/vhosts.d/Makefile \
-@@ -842,6 +869,13 @@ else
+@@ -764,6 +790,13 @@ else
  	disable_feature="$disable_feature $features"
  fi
  
@@ -51,11 +50,11 @@ index 25e6b71..5814dfe 100644
  dnl output
  
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 906823e..edf5b65 100644
+index 367f5d9..27b9db3 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -267,6 +267,15 @@ mod_accesslog_la_SOURCES = mod_accesslog.c
- mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version
+@@ -265,6 +265,14 @@ mod_accesslog_la_SOURCES = mod_accesslog.c
+ mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version -no-undefined
  mod_accesslog_la_LIBADD = $(common_libadd)
  
 +if WITH_WEBSOCKET
@@ -66,15 +65,14 @@ index 906823e..edf5b65 100644
 +mod_websocket_la_LDFLAGS = -module -export-dynamic -avoid-version -no-undefined
 +mod_websocket_la_LIBADD = $(PCRE_LIB) $(common_libadd)
 +endif
-+
  
- hdr = server.h base64.h buffer.h network.h log.h keyvalue.h \
- 	response.h request.h fastcgi.h chunk.h \
+ hdr = server.h buffer.h network.h log.h keyvalue.h \
+       response.h request.h fastcgi.h chunk.h \
 diff --git a/src/base.h b/src/base.h
-index 4c748a5..c1d6e3c 100644
+index 66710f1..6d78b83 100644
 --- a/src/base.h
 +++ b/src/base.h
-@@ -340,7 +340,8 @@ typedef enum {
+@@ -337,7 +337,8 @@ typedef enum {
  	CON_STATE_WRITE,
  	CON_STATE_RESPONSE_END,
  	CON_STATE_ERROR,
@@ -105,10 +103,10 @@ index 5ef7a1e..90fb7d4 100644
  	}
  }
 diff --git a/src/connections.c b/src/connections.c
-index 1e225d9..1eb0f16 100644
+index 8a2774d..6fb0f27 100644
 --- a/src/connections.c
 +++ b/src/connections.c
-@@ -1002,6 +1002,8 @@ found_header_end:
+@@ -1152,6 +1152,8 @@ found_header_end:
  		}
  
  		break;
@@ -117,18 +115,18 @@ index 1e225d9..1eb0f16 100644
  	default: break;
  	}
  
-@@ -1076,7 +1078,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
+@@ -1226,7 +1228,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
  	}
  
  	if (con->state == CON_STATE_READ ||
 -	    con->state == CON_STATE_READ_POST) {
 +	    con->state == CON_STATE_READ_POST ||
-+		con->state == CON_STATE_READ_CONTINUOUS) {
++	    con->state == CON_STATE_READ_CONTINUOUS) {
  		connection_handle_read_state(srv, con);
  	}
  
-@@ -1330,6 +1333,9 @@ int connection_state_machine(server *srv, connection *con) {
- 				/* fallthrough */
+@@ -1479,6 +1482,9 @@ int connection_state_machine(server *srv, connection *con) {
+ 				done = -1;
  			case HANDLER_WAIT_FOR_EVENT:
  				/* come back here */
 +				if (con->state == CON_STATE_READ_CONTINUOUS) {
@@ -137,7 +135,7 @@ index 1e225d9..1eb0f16 100644
  				connection_set_state(srv, con, CON_STATE_HANDLE_REQUEST);
  
  				break;
-@@ -1469,12 +1475,17 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1618,12 +1624,16 @@ int connection_state_machine(server *srv, connection *con) {
  			break;
  		case CON_STATE_READ_POST:
  		case CON_STATE_READ:
@@ -151,11 +149,10 @@ index 1e225d9..1eb0f16 100644
 +			if (con->state == CON_STATE_READ_CONTINUOUS) {
 +				plugins_call_read_continuous(srv, con);
 +			}
-+
  			break;
  		case CON_STATE_WRITE:
  			if (srv->srvconf.log_state_handling) {
-@@ -1639,6 +1650,9 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1792,6 +1802,9 @@ int connection_state_machine(server *srv, connection *con) {
  			fdevent_event_del(srv->ev, &(con->fde_ndx), con->fd);
  		}
  		break;
@@ -167,10 +164,10 @@ index 1e225d9..1eb0f16 100644
  		break;
 diff --git a/src/mod_websocket.c b/src/mod_websocket.c
 new file mode 100644
-index 0000000..027068a
+index 0000000..34e831d
 --- /dev/null
 +++ b/src/mod_websocket.c
-@@ -0,0 +1,826 @@
+@@ -0,0 +1,838 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -299,9 +296,21 @@ index 0000000..027068a
 +    }
 +    port = buffer_init();
 +    if (du->type == TYPE_INTEGER) {
-+        buffer_copy_int(port, ((data_integer *)du)->value);
++        if (buffer_copy_long(port, ((data_integer *)du)->value) != 0) {
++            buffer_free(port);
++            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
++            hctx->con->http_status = 500;
++            hctx->con->mode = DIRECT;
++            return -1;
++        }
 +    } else if (du->type == TYPE_STRING && !buffer_is_empty(((data_string *)du)->value)) {
-+        buffer_copy_buffer(port, ((data_string *)du)->value);
++        if (buffer_copy_string_buffer(port, ((data_string *)du)->value) != 0) {
++            buffer_free(port);
++            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
++            hctx->con->http_status = 500;
++            hctx->con->mode = DIRECT;
++            return -1;
++        }
 +    } else {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "port section is invalid");
 +        buffer_free(port);
@@ -598,7 +607,7 @@ index 0000000..027068a
 +        p->config_storage[i] = s;
 +
 +        ca = ((data_config *)(srv->config_context->data[i]))->value;
-+        if (config_insert_values_global(srv, ca, cv, i == 0 ? T_CONFIG_SCOPE_SERVER : T_CONFIG_SCOPE_CONNECTION) != 0) {
++        if (config_insert_values_global(srv, ca, cv) != 0) {
 +            log_error_write(srv, __FILE__, __LINE__, "s", "no memory.");
 +            return HANDLER_ERROR;
 +        }
@@ -616,7 +625,7 @@ index 0000000..027068a
 +                return HANDLER_ERROR;
 +            }
 +            ext = data_array_init();
-+            buffer_copy_buffer(ext->key, ((data_array *)(da->value->data[j]))->key);
++            buffer_copy_string_buffer(ext->key, ((data_array *)(da->value->data[j]))->key);
 +            ext->value = array_init_array(((data_array *)(da->value->data[j]))->value);
 +            ext->is_index_key = ((data_array *)(da->value->data[j]))->is_index_key;
 +            array_insert_unique(s->exts, (data_unset *)ext);
@@ -1387,10 +1396,10 @@ index 0000000..413d5ef
 +#endif	/* _MOD_WEBSOCKET_BASE64_H_ */
 diff --git a/src/mod_websocket_frame.c b/src/mod_websocket_frame.c
 new file mode 100644
-index 0000000..090b098
+index 0000000..ac43f13
 --- /dev/null
 +++ b/src/mod_websocket_frame.c
-@@ -0,0 +1,591 @@
+@@ -0,0 +1,574 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -1436,46 +1445,40 @@ index 0000000..090b098
 +    if (siz == 0 && (type == MOD_WEBSOCKET_FRAME_TYPE_TEXT || type == MOD_WEBSOCKET_FRAME_TYPE_BIN)) {
 +        return 0;
 +    }
-+    b = buffer_init();
-+
++    b = chunkqueue_get_append_buffer(hctx->tocli);
 +    if (!b) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +        return -1;
 +    }
 +    switch (type) {
 +    case MOD_WEBSOCKET_FRAME_TYPE_TEXT:
-+        buffer_append_string_len(b, (const char *)&head, 1);
-+        buffer_append_string_len(b, payload, siz);
-+        buffer_append_string_len(b, (const char *)&tail, 1);
++        buffer_append_memory(b, (const char *)&head, 1);
++        buffer_append_memory(b, payload, siz);
++        buffer_append_memory(b, (const char *)&tail, 1);
 +        break;
 +    case MOD_WEBSOCKET_FRAME_TYPE_BIN:
-+        buffer_append_string_len(b, (const char *)&head, 1);
++        buffer_append_memory(b, (const char *)&head, 1);
 +        if (mod_websocket_base64_encode((unsigned char **)&enc, &encsiz,
 +                                        (unsigned char *)payload, siz) != 0) {
 +            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "fail to base64-encode");
 +            chunkqueue_reset(hctx->tocli);
-+            buffer_free(b);
 +            return -1;
 +        }
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "ss", "base64-encoded data:", enc, ", size = ", encsiz);
-+        buffer_append_string_len(b, enc, encsiz);
++        buffer_append_memory(b, enc, encsiz);
 +        free(enc);
-+        buffer_append_string_len(b, (const char *)&tail, 1);
++        buffer_append_memory(b, (const char *)&tail, 1);
 +        break;
 +    case MOD_WEBSOCKET_FRAME_TYPE_CLOSE:
-+        buffer_append_string_len(b, (const char *)&tail, 1);
-+        buffer_append_string_len(b, (const char *)&head, 1);
++        buffer_append_memory(b, (const char *)&tail, 1);
++        buffer_append_memory(b, (const char *)&head, 1);
 +        break;
 +    default:
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "invalid frame type");
-+        buffer_free(b);
 +        return -1;
 +    }
 +    /* needs '\0' char to send */
-+    buffer_append_string_len(b, &endl, 1);
-+    chunkqueue_append_buffer(hctx->tocli, b);
-+    buffer_free(b);
-+
++    buffer_append_memory(b, &endl, 1);
 +    return 0;
 +}
 +
@@ -1532,7 +1535,7 @@ index 0000000..090b098
 +                        buffer_reset(payload);
 +                        return -1;
 +                    }
-+                    buffer_append_string_len(payload, &frame->ptr[i], frame->used - i - 1);
++                    buffer_append_memory(payload, &frame->ptr[i], frame->used - i - 1);
 +                    i += frame->used - i - 1;
 +                } else {
 +                    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG,
@@ -1546,14 +1549,14 @@ index 0000000..090b098
 +                        buffer_reset(payload);
 +                        return -1;
 +                    }
-+                    buffer_append_string_len(payload, &frame->ptr[i], pff - &frame->ptr[i]);
++                    buffer_append_memory(payload, &frame->ptr[i], pff - &frame->ptr[i]);
 +                    i += (pff - &frame->ptr[i]);
 +                    hctx->frame.state = MOD_WEBSOCKET_FRAME_STATE_INIT;
 +                }
 +                i++;
 +                if (hctx->frame.type == MOD_WEBSOCKET_FRAME_TYPE_TEXT && payload->used > 0) {
 +                    hctx->frame.ctl.siz = 0;
-+                    b = buffer_init();
++                    b = chunkqueue_get_append_buffer(hctx->tosrv);
 +                    if (!b) {
 +                        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +                        chunkqueue_reset(hctx->tosrv);
@@ -1561,15 +1564,13 @@ index 0000000..090b098
 +                        buffer_reset(payload);
 +                        return -1;
 +                    }
-+                    buffer_append_string_len(b, payload->ptr, payload->used);
++                    buffer_append_memory(b, payload->ptr, payload->used);
 +                    /* needs '\0' char to send */
-+                    buffer_append_string_len(b, &endl, 1);
-+                    chunkqueue_append_buffer(hctx->tosrv, b);
-+                    buffer_free(b);
++                    buffer_append_memory(b, &endl, 1);
 +                    buffer_reset(payload);
 +                } else {
 +                    if (hctx->frame.state == MOD_WEBSOCKET_FRAME_STATE_INIT && payload->used > 0) {
-+                        b = buffer_init();
++                        b = chunkqueue_get_append_buffer(hctx->tosrv);
 +                        if (!b) {
 +                            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +                            chunkqueue_reset(hctx->tosrv);
@@ -1584,14 +1585,11 @@ index 0000000..090b098
 +                            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "fail to base64-decode");
 +                            chunkqueue_reset(hctx->tosrv);
 +                            chunkqueue_reset(hctx->fromcli);
-+                            buffer_free(b);
 +                            return -1;
 +                        }
-+                        buffer_append_string_len(b, b64, b64siz);
++                        buffer_append_memory(b, b64, b64siz);
 +                        /* needs '\0' char to send */
-+                        buffer_append_string_len(b, &endl, 1);
-+                        chunkqueue_append_buffer(hctx->tosrv, b);
-+                        buffer_free(b);
++                        buffer_append_memory(b, &endl, 1);
 +                        buffer_reset(payload);
 +                        free(b64);
 +                    }
@@ -1621,7 +1619,7 @@ index 0000000..090b098
 +    if (payload == NULL && (type == MOD_WEBSOCKET_FRAME_TYPE_TEXT || type == MOD_WEBSOCKET_FRAME_TYPE_BIN)) {
 +        return -1;
 +    }
-+    b = buffer_init();
++    b = chunkqueue_get_append_buffer(hctx->tocli);
 +    if (!b) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +        return -1;
@@ -1649,17 +1647,17 @@ index 0000000..090b098
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "type = close");
 +        break;
 +    }
-+    buffer_append_string_len(b, &c, 1);
++    buffer_append_memory(b, &c, 1);
 +
 +    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "sx", "payload size =", siz);
 +    if (siz < MOD_WEBSOCKET_FRAME_LEN16) {
 +        sizbuf[0] = siz;
-+        buffer_append_string_len(b, sizbuf, 1);
++        buffer_append_memory(b, sizbuf, 1);
 +    } else if (siz <= UINT16_MAX) {
 +        sizbuf[0] = MOD_WEBSOCKET_FRAME_LEN16;
 +        sizbuf[1] = (siz >> 8) & 0xff;
 +        sizbuf[2] = siz & 0xff;
-+        buffer_append_string_len(b, sizbuf, MOD_WEBSOCKET_FRAME_LEN16_CNT + 1);
++        buffer_append_memory(b, sizbuf, MOD_WEBSOCKET_FRAME_LEN16_CNT + 1);
 +    } else {
 +        memset(sizbuf, 0, sizeof(sizbuf));
 +        sizbuf[0] = MOD_WEBSOCKET_FRAME_LEN63;
@@ -1667,17 +1665,17 @@ index 0000000..090b098
 +        sizbuf[6] = (siz >> 16) & 0xff;
 +        sizbuf[7] = (siz >> 8) & 0xff;
 +        sizbuf[8] = siz & 0xff;
-+        buffer_append_string_len(b, sizbuf, MOD_WEBSOCKET_FRAME_LEN63_CNT + 1);
++        buffer_append_memory(b, sizbuf, MOD_WEBSOCKET_FRAME_LEN63_CNT + 1);
 +    }
 +    if (siz == 0) {
-+        chunkqueue_append_buffer(hctx->tocli, b);
-+        buffer_free(b);
++        /* needs '\0' char to send */
++        buffer_append_memory(b, &endl, 1);
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "sx", "frame size =", b->used - 1);
 +        return 0;
 +    }
-+    buffer_append_string_len(b, payload, siz);
-+    chunkqueue_append_buffer(hctx->tocli, b);
-+    buffer_free(b);
++    buffer_append_memory(b, payload, siz);
++    /* needs '\0' char to send */
++    buffer_append_memory(b, &endl, 1);
 +    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "sx", "frame size =", b->used - 1);
 +    return 0;
 +}
@@ -1821,7 +1819,7 @@ index 0000000..090b098
 +                if (hctx->frame.ctl.siz <= (uint64_t)(frame->used - i - 1)) {
 +                    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG,
 +                              "sx", "read payload, size =", hctx->frame.ctl.siz);
-+                    buffer_append_string_len(payload, &frame->ptr[i],
++                    buffer_append_memory(payload, &frame->ptr[i],
 +                                         (size_t)(hctx->frame.ctl.siz & SIZE_MAX));
 +                    i += (size_t)(hctx->frame.ctl.siz & SIZE_MAX);
 +                    hctx->frame.ctl.siz = 0;
@@ -1833,7 +1831,7 @@ index 0000000..090b098
 +                    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG,
 +                              "sx", "read payload, size =",
 +                              frame->used - i - 1);
-+                    buffer_append_string_len(payload, &frame->ptr[i], frame->used - i - 1);
++                    buffer_append_memory(payload, &frame->ptr[i], frame->used - i - 1);
 +                    hctx->frame.ctl.siz -= (uint64_t)(frame->used - i - 1);
 +                    i += (frame->used - i - 1);
 +                    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "sx", "rest of payload size =", hctx->frame.ctl.siz);
@@ -1842,19 +1840,17 @@ index 0000000..090b098
 +                case MOD_WEBSOCKET_FRAME_TYPE_TEXT:
 +                case MOD_WEBSOCKET_FRAME_TYPE_BIN:
 +                    unmask_payload(hctx);
-+                    b = buffer_init();
++                    b = chunkqueue_get_append_buffer(hctx->tosrv);
 +                    if (!b) {
 +                        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +                        chunkqueue_reset(hctx->fromcli);
 +                        buffer_reset(payload);
 +                        return -1;
 +                    }
-+                    buffer_append_string_len(b, payload->ptr, payload->used);
++                    buffer_append_memory(b, payload->ptr, payload->used);
 +                    buffer_reset(payload);
 +                    /* needs '\0' char to send */
-+                    buffer_append_string_len(b, &endl, 1);
-+                    chunkqueue_append_buffer(hctx->tosrv, b);
-+                    buffer_free(b);
++                    buffer_append_memory(b, &endl, 1);
 +                    break;
 +                case MOD_WEBSOCKET_FRAME_TYPE_PING:
 +                    if (hctx->frame.ctl.siz == 0) {
@@ -1896,16 +1892,14 @@ index 0000000..090b098
 +    if (payload == NULL || siz == 0) {
 +        return 0;
 +    }
-+    b = buffer_init();
++    b = chunkqueue_get_append_buffer(hctx->tocli);
 +    if (!b) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +        return -1;
 +    }
-+    buffer_append_string_len(b, payload, siz);
++    buffer_append_memory(b, payload, siz);
 +    /* needs '\0' char to send */
-+    buffer_append_string_len(b, &endl, 1);
-+    chunkqueue_append_buffer(hctx->tocli, b);
-+    buffer_free(b);
++    buffer_append_memory(b, &endl, 1);
 +    return 0;
 +}
 +
@@ -1921,14 +1915,12 @@ index 0000000..090b098
 +        if (!frame) {
 +            continue;
 +        }
-+        b = buffer_init();
++        b = chunkqueue_get_append_buffer(hctx->tosrv);
 +        if (!b) {
 +            DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +            return -1;
 +        }
-+        buffer_append_string_len(b, frame->ptr, frame->used);
-+        chunkqueue_append_buffer(hctx->tosrv, b);
-+        buffer_free(b);
++        buffer_append_memory(b, frame->ptr, frame->used);
 +    }
 +    chunkqueue_reset(hctx->fromcli);
 +    return 0;
@@ -1984,10 +1976,10 @@ index 0000000..090b098
 +}
 diff --git a/src/mod_websocket_handshake.c b/src/mod_websocket_handshake.c
 new file mode 100644
-index 0000000..e25f574
+index 0000000..100795e
 --- /dev/null
 +++ b/src/mod_websocket_handshake.c
-@@ -0,0 +1,574 @@
+@@ -0,0 +1,565 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -2305,12 +2297,12 @@ index 0000000..e25f574
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "Sec-WebSocket-Key is invalid");
 +        return MOD_WEBSOCKET_BAD_REQUEST;
 +    }
-+    resp = buffer_init();
++    resp = chunkqueue_get_append_buffer(hctx->tocli);
 +    if (resp == NULL) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +        return MOD_WEBSOCKET_INTERNAL_SERVER_ERROR;
 +    }
-+    buffer_copy_string(resp, const_hdr);
++    buffer_append_string(resp, const_hdr);
 +    /* Sec-WebSocket-Origin header */
 +    if (!buffer_is_empty(hctx->handshake.origin)) {
 +        buffer_append_string(resp, "Sec-WebSocket-Origin: ");
@@ -2318,7 +2310,6 @@ index 0000000..e25f574
 +        buffer_append_string(resp, "\r\n");
 +    } else {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "Origin header is invalid");
-+        buffer_free(resp);
 +        return MOD_WEBSOCKET_BAD_REQUEST;
 +    }
 +    /* Sec-WebSocket-Location header */
@@ -2332,14 +2323,11 @@ index 0000000..e25f574
 +        buffer_append_string_buffer(resp, hctx->handshake.host);
 +    } else {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "Host header does not exist");
-+        buffer_free(resp);
 +        return MOD_WEBSOCKET_BAD_REQUEST;
 +    }
 +    buffer_append_string_buffer(resp, hctx->con->uri.path);
 +    buffer_append_string(resp, "\r\n\r\n");
 +    buffer_append_string_len(resp, (char *)md5sum, MD5_STRLEN);
-+    chunkqueue_append_buffer(hctx->tocli, resp);
-+    buffer_free(resp);
 +    return MOD_WEBSOCKET_OK;
 +}
 +#endif	/* _MOD_WEBSOCKET_SPEC_IETF_00_ */
@@ -2380,14 +2368,13 @@ index 0000000..e25f574
 +        return MOD_WEBSOCKET_INTERNAL_SERVER_ERROR;
 +    }
 +
-+    resp = buffer_init();
-+
++    resp = chunkqueue_get_append_buffer(hctx->tocli);
 +    if (resp == NULL) {
 +        free(accept_body);
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "no memory");
 +        return MOD_WEBSOCKET_INTERNAL_SERVER_ERROR;
 +    }
-+    buffer_copy_string(resp, const_hdr);
++    buffer_append_string(resp, const_hdr);
 +    buffer_append_string(resp, "Sec-WebSocket-Accept: ");
 +    buffer_append_string_len(resp, (char *)accept_body, accept_body_siz);
 +    free(accept_body);
@@ -2400,8 +2387,6 @@ index 0000000..e25f574
 +        buffer_append_string(resp, "\r\n");
 +    }
 +    buffer_append_string(resp, "\r\n");
-+    chunkqueue_append_buffer(hctx->tocli, resp);
-+    buffer_free(resp);
 +    return MOD_WEBSOCKET_OK;
 +}
 +#endif	/* _MOD_WEBSOCKET_SPEC_RFC_6455_ */
@@ -2451,7 +2436,7 @@ index 0000000..e25f574
 +        } else {
 +            addr = buffer_init_string(info.peer.addr);
 +            port = buffer_init();
-+            buffer_append_int(port, info.peer.port);
++            buffer_append_long(port, info.peer.port);
 +        }
 +#else
 +        addr = buffer_init_string("unknown");
@@ -2465,7 +2450,7 @@ index 0000000..e25f574
 +        } else {
 +            addr = buffer_init_string(info.peer.addr);
 +            port = buffer_init();
-+            buffer_append_int(port, info.peer.port);
++            buffer_append_long(port, info.peer.port);
 +        }
 +    }
 +    hdrs = hctx->con->request.headers;
@@ -2540,8 +2525,7 @@ index 0000000..e25f574
 +        return MOD_WEBSOCKET_INTERNAL_SERVER_ERROR;
 +    }
 +    append_x_forwarded_headers(hctx);
-+    new_request = buffer_init();
-+
++    new_request = chunkqueue_get_append_buffer(hctx->tosrv);
 +    buffer_append_string_buffer(new_request, hctx->con->request.request_line);
 +    buffer_append_string(new_request, "\r\n");
 +    hdrs = hctx->con->request.headers;
@@ -2557,8 +2541,7 @@ index 0000000..e25f574
 +#ifdef	_MOD_WEBSOCKET_SPEC_IETF_00_
 +    buffer_append_string_len(new_request, hctx->handshake.key3->ptr, SEC_WEBSOCKET_KEY3_STRLEN);
 +#endif	/* _MOD_WEBSOCKET_SPEC_IETF_00_ */
-+    chunkqueue_append_buffer(hctx->tosrv, new_request);
-+    buffer_free(new_request);
++
 +    DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "forward handshake request");
 +    return MOD_WEBSOCKET_OK;
 +}
@@ -3021,18 +3004,18 @@ index 0000000..7831c0e
 +
 +#endif  /* _MOD_WEBSOCKET_SOCKET_H_ */
 diff --git a/src/plugin.c b/src/plugin.c
-index a55b09c..080faad 100644
+index 55f8b03..ae4b6ae 100644
 --- a/src/plugin.c
 +++ b/src/plugin.c
-@@ -45,6 +45,7 @@ typedef enum {
- 	PLUGIN_FUNC_INIT,
- 	PLUGIN_FUNC_CLEANUP,
- 	PLUGIN_FUNC_SET_DEFAULTS,
-+	PLUGIN_FUNC_READ_CONTINUOUS,
+@@ -44,6 +44,7 @@ typedef enum {
+ 		PLUGIN_FUNC_INIT,
+ 		PLUGIN_FUNC_CLEANUP,
+ 		PLUGIN_FUNC_SET_DEFAULTS,
++		PLUGIN_FUNC_READ_CONTINUOUS,
  
- 	PLUGIN_FUNC_SIZEOF
+ 		PLUGIN_FUNC_SIZEOF
  } plugin_t;
-@@ -328,6 +329,7 @@ PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_JOBLIST, handle_joblist)
+@@ -274,6 +275,7 @@ PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_JOBLIST, handle_joblist)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_DOCROOT, handle_docroot)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_PHYSICAL, handle_physical)
  PLUGIN_TO_SLOT(PLUGIN_FUNC_CONNECTION_RESET, connection_reset)
@@ -3040,7 +3023,7 @@ index a55b09c..080faad 100644
  
  #undef PLUGIN_TO_SLOT
  
-@@ -457,6 +459,7 @@ handler_t plugins_call_init(server *srv) {
+@@ -403,6 +405,7 @@ handler_t plugins_call_init(server *srv) {
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_DOCROOT, handle_docroot);
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_HANDLE_PHYSICAL, handle_physical);
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_CONNECTION_RESET, connection_reset);
@@ -3049,7 +3032,7 @@ index a55b09c..080faad 100644
  		PLUGIN_TO_SLOT(PLUGIN_FUNC_SET_DEFAULTS, set_defaults);
  #undef PLUGIN_TO_SLOT
 diff --git a/src/plugin.h b/src/plugin.h
-index 7353362..95f314a 100644
+index cadce54..80b8df3 100644
 --- a/src/plugin.h
 +++ b/src/plugin.h
 @@ -23,6 +23,7 @@
