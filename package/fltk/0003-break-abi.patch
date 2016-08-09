@@ -1,0 +1,19 @@
+commit 7ddd6a5091cb6c1bb714c1a91899c3439c44c840
+Author: Nicholas Walton <nicholas.walton@gmail.com>
+Date:   Mon May 16 13:48:39 2016 -0700
+
+    Enable ABI breaking fixes, because we need them.
+
+diff --git a/FL/Enumerations.H b/FL/Enumerations.H
+index 2c183c4..a39118f 100644
+--- a/FL/Enumerations.H
++++ b/FL/Enumerations.H
+@@ -27,7 +27,7 @@
+  * in the current patch release of FLTK. ** Use for static builds only! **
+  * For more info on this macro, see: http://fltk.org/cmp.php#FLTK_ABI_VERSION
+  */
+-//#define FLTK_ABI_VERSION 10303
++#define FLTK_ABI_VERSION 10303
+ 
+ #  include "Fl_Export.H"
+ #  include "fl_types.h"
