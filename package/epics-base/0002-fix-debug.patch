@@ -1,0 +1,146 @@
+diff --unified -r -p ./configure/CONFIG_COMMON /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/configure/CONFIG_COMMON
+--- ./configure/CONFIG_COMMON	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/configure/CONFIG_COMMON	2016-08-15 18:26:06.503915793 -0700
+@@ -226,7 +226,7 @@ USR_ARFLAGS =
+ 
+ # Debug specific options
+ DEBUG_CPPFLAGS =
+-DEBUG_CFLAGS =
++DEBUG_CFLAGS = -DDEBUG
+ DEBUG_CXXFLAGS = $(DEBUG_CFLAGS)
+ DEBUG_LDFLAGS =
+ DEBUG_LDLIBS =
+diff --unified -r -p ./src/ca/client/searchTimer.cpp /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/client/searchTimer.cpp
+--- ./src/ca/client/searchTimer.cpp	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/client/searchTimer.cpp	2016-08-15 18:26:06.503915793 -0700
+@@ -282,7 +282,7 @@ epicsTimerNotify::expireStatus searchTim
+             char buf[64];
+             currentTime.strftime ( buf, sizeof(buf), "%M:%S.%09f");
+             debugPrintf ( ("sent %u delay sec=%f Rts=%s\n", 
+-                nFrameSent, this->period(), buf ) );
++                nFrameSent, this->period( guard ), buf ) );
+         }
+ #   endif
+ 
+diff --unified -r -p ./src/ca/legacy/pcas/generic/st/casDGIntfOS.cc /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/legacy/pcas/generic/st/casDGIntfOS.cc
+--- ./src/ca/legacy/pcas/generic/st/casDGIntfOS.cc	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/legacy/pcas/generic/st/casDGIntfOS.cc	2016-08-15 18:26:06.503915793 -0700
+@@ -430,8 +430,8 @@ void casDGIntfOS::sendCB()
+ 
+ #	if defined(DEBUG)
+ 		printf ("write attempted on %d result was %d\n", this->getFD(), flushCond );
+-		printf ("Recv backlog %u\n", this->inBuf::bytesPresent());
+-		printf ("Send backlog %u\n", this->outBuf::bytesPresent());
++		printf ("Recv backlog %u\n", this->inBufBytesPending());
++		printf ("Send backlog %u\n", this->outBufBytesPending());
+ #	endif
+ 
+     //
+diff --unified -r -p ./src/ioc/db/dbEvent.c /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ioc/db/dbEvent.c
+--- ./src/ioc/db/dbEvent.c	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ioc/db/dbEvent.c	2016-08-15 18:52:43.005318851 -0700
+@@ -1110,7 +1110,7 @@ void db_event_flow_ctrl_mode_on (dbEvent
+      */
+     epicsEventSignal(evUser->ppendsem);
+ #ifdef DEBUG
+-    printf("fc on %lu\n", tickGet());
++    printf("fc on\n");
+ #endif
+ }
+ 
+@@ -1129,7 +1129,7 @@ void db_event_flow_ctrl_mode_off (dbEven
+      */
+     epicsEventSignal (evUser->ppendsem);
+ #ifdef DEBUG
+-    printf("fc off %lu\n", tickGet());
++    printf("fc off\n");
+ #endif
+ }
+ 
+diff --unified -r -p ./src/ioc/rsrv/camessage.c /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ioc/rsrv/camessage.c
+--- ./src/ioc/rsrv/camessage.c	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ioc/rsrv/camessage.c	2016-08-15 18:31:54.234364913 -0700
+@@ -1301,7 +1301,7 @@ static int claim_ciu_action ( caHdrLarge
+         }
+ 
+         DLOG ( 2, ("CAS: claim_ciu_action found '%s', type %d, count %d\n",
+-            pName, dbChannelCAType(dbch), dbChannelElements(dbch)) );
++            pName, dbChannelFinalCAType(dbch), dbChannelElements(dbch)) );
+ 
+         pciu = casCreateChannel (
+                 client,
+@@ -2273,7 +2273,7 @@ static int search_reply_udp ( caHdrLarge
+ 
+     /* Exit quickly if channel not on this node */
+     if (dbChannelTest(pName)) {
+-        DLOG ( 2, ( "CAS: Lookup for channel \"%s\" failed\n", pPayLoad ) );
++        DLOG ( 2, ( "CAS: Lookup for channel \"%s\" failed\n", pName ) );
+         if (mp->m_dataType == DOREPLY)
+             search_fail_reply ( mp, pPayload, client );
+         return RSRV_OK;
+@@ -2388,7 +2388,7 @@ static int search_reply_tcp (
+ 
+     /* Exit quickly if channel not on this node */
+     if (dbChannelTest(pName)) {
+-        DLOG ( 2, ( "CAS: Lookup for channel \"%s\" failed\n", pPayLoad ) );
++        DLOG ( 2, ( "CAS: Lookup for channel \"%s\" failed\n", pName ) );
+         if (mp->m_dataType == DOREPLY)
+             search_fail_reply ( mp, pPayload, client );
+         return RSRV_OK;
+@@ -2520,7 +2520,7 @@ int camessage ( struct client *client )
+         }
+     }
+ 
+-    DLOG ( 2, ( "CAS: Parsing %d(decimal) bytes\n", recv->cnt ) );
++    DLOG ( 2, ( "CAS: Parsing %d(decimal) bytes\n", client->recv.cnt ) );
+ 
+     while ( 1 )
+     {
+diff --unified -r -p ./src/libCom/log/iocLogServer.c /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/log/iocLogServer.c
+--- ./src/libCom/log/iocLogServer.c	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/log/iocLogServer.c	2016-08-15 18:26:06.503915793 -0700
+@@ -685,7 +685,7 @@ static void freeLogClient(struct iocLogC
+ 	int		status;
+ 
+ #	ifdef	DEBUG
+-	if(length == 0){
++	if(pclient->nChar == 0){
+ 		fprintf(stderr, "iocLogServer: nil message disconnect\n");
+ 	}
+ #	endif
+diff --unified -r -p ./src/libCom/timer/timer.cpp /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/timer/timer.cpp
+--- ./src/libCom/timer/timer.cpp	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/timer/timer.cpp	2016-08-15 18:26:06.503915793 -0700
+@@ -130,7 +130,7 @@ void timer::privateStart ( epicsTimerNot
+ #   endif
+ 
+     debugPrintf ( ("Start of \"%s\" with delay %f at %p preempting %u\n", 
+-        typeid ( this->notify ).name (), 
++        typeid ( this->pNotify ).name (), 
+         expire - epicsTime::getCurrent (), 
+         this, preemptCount ) );
+ }
+diff --unified -r -p ./src/libCom/timer/timerQueue.cpp /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/timer/timerQueue.cpp
+--- ./src/libCom/timer/timerQueue.cpp	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/libCom/timer/timerQueue.cpp	2016-08-15 18:26:06.503915793 -0700
+@@ -134,7 +134,7 @@ double timerQueue::process ( const epics
+             epicsGuardRelease < epicsMutex > unguard ( guard );
+ 
+             debugPrintf ( ( "%5u expired \"%s\" with error %f sec\n", 
+-                N++, typeid ( this->pExpireTmr->notify ).name (), 
++                N++, typeid ( this->pExpireTmr->pNotify ).name (), 
+                 currentTime - this->pExpireTmr->exp ) );
+             try {
+                 expStat = pTmpNotify->expire ( currentTime );
+diff --unified -r -p ./src/template/base/top/caServerApp/exPV.cc /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/template/base/top/caServerApp/exPV.cc
+--- ./src/template/base/top/caServerApp/exPV.cc	2016-05-31 13:46:48.000000000 -0700
++++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/template/base/top/caServerApp/exPV.cc	2016-08-15 18:55:19.454551221 -0700
+@@ -82,7 +82,7 @@ void exPV::destroy()
+ caStatus exPV::update ( const gdd & valueIn )
+ {
+ #   if DEBUG
+-        printf("Setting %s too:\n", this->info.getName().string());
++        printf("Setting %s too:\n", this->info.getName());
+         valueIn.dump();
+ #   endif
+ 
