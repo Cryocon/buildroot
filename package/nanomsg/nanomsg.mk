@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-NANOMSG_VERSION = 0.4-beta
-NANOMSG_SITE = http://download.nanomsg.org
+NANOMSG_VERSION = 1.0.0
+NANOMSG_SOURCE = $(NANOMSG_VERSION).tar.gz
+NANOMSG_SITE = https://github.com/nanomsg/nanomsg/archive
 NANOMSG_LICENSE = MIT/X11
 NANOMSG_LICENSE_FILES = COPYING
 NANOMSG_INSTALL_STAGING = YES
 
-$(eval $(autotools-package))
+$(eval $(cmake-package))
