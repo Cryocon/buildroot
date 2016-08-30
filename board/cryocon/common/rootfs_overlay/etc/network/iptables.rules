@@ -27,4 +27,6 @@ COMMIT
 # debugging entries
 -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 2345 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 5064 -j ACCEPT
+-A INPUT -p udp -m udp --dport 5064 -j ACCEPT
 COMMIT
