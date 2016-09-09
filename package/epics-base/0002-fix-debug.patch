@@ -1,15 +1,3 @@
-diff --unified -r -p ./configure/CONFIG_COMMON /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/configure/CONFIG_COMMON
---- ./configure/CONFIG_COMMON	2016-05-31 13:46:48.000000000 -0700
-+++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/configure/CONFIG_COMMON	2016-08-15 18:26:06.503915793 -0700
-@@ -226,7 +226,7 @@ USR_ARFLAGS =
- 
- # Debug specific options
- DEBUG_CPPFLAGS =
--DEBUG_CFLAGS =
-+DEBUG_CFLAGS = -DDEBUG
- DEBUG_CXXFLAGS = $(DEBUG_CFLAGS)
- DEBUG_LDFLAGS =
- DEBUG_LDLIBS =
 diff --unified -r -p ./src/ca/client/searchTimer.cpp /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/client/searchTimer.cpp
 --- ./src/ca/client/searchTimer.cpp	2016-05-31 13:46:48.000000000 -0700
 +++ /home/nicholaswalton/cryocon/buildroot/output/build/epics-base-3.15.4/src/ca/client/searchTimer.cpp	2016-08-15 18:26:06.503915793 -0700
