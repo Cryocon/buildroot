@@ -1,5 +1,5 @@
 diff --git a/configure.ac b/configure.ac
-index e5d15da..51a7a91 100644
+index 682023b..36fa025 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -632,6 +632,32 @@ dnl build version-id
@@ -50,11 +50,11 @@ index e5d15da..51a7a91 100644
  dnl output
  
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 367f5d9..27b9db3 100644
+index 4afdcc6..6e1f4b0 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -265,6 +265,14 @@ mod_accesslog_la_SOURCES = mod_accesslog.c
- mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version -no-undefined
+ mod_accesslog_la_LDFLAGS = -module -export-dynamic -avoid-version
  mod_accesslog_la_LIBADD = $(common_libadd)
  
 +if WITH_WEBSOCKET
@@ -69,10 +69,10 @@ index 367f5d9..27b9db3 100644
  hdr = server.h buffer.h network.h log.h keyvalue.h \
        response.h request.h fastcgi.h chunk.h \
 diff --git a/src/base.h b/src/base.h
-index 66710f1..6d78b83 100644
+index 87bacfc..757ed53 100644
 --- a/src/base.h
 +++ b/src/base.h
-@@ -337,7 +337,8 @@ typedef enum {
+@@ -340,7 +340,8 @@ typedef enum {
  	CON_STATE_WRITE,
  	CON_STATE_RESPONSE_END,
  	CON_STATE_ERROR,
@@ -82,6 +82,349 @@ index 66710f1..6d78b83 100644
  } connection_state_t;
  
  typedef enum { COND_RESULT_UNSET, COND_RESULT_FALSE, COND_RESULT_TRUE } cond_result_t;
+diff --git a/src/configparser.c b/src/configparser.c
+index 7e1bbd6..ae8188f 100644
+--- a/src/configparser.c
++++ b/src/configparser.c
+@@ -4,7 +4,7 @@
+ /* First off, code is include which follows the "include" declaration
+ ** in the input file. */
+ #include <stdio.h>
+-#line 5 "../../src/configparser.y"
++#line 5 "./configparser.y"
+ 
+ #include "configfile.h"
+ #include "buffer.h"
+@@ -518,42 +518,42 @@ static void yy_destructor(YYCODETYPE yymajor, YYMINORTYPE *yypminor){
+     case 23:
+     case 24:
+     case 25:
+-#line 144 "../../src/configparser.y"
++#line 144 "./configparser.y"
+ { buffer_free((yypminor->yy0)); }
+ #line 523 "configparser.c"
+       break;
+     case 35:
+-#line 135 "../../src/configparser.y"
++#line 135 "./configparser.y"
+ { (yypminor->yy41)->free((yypminor->yy41)); }
+ #line 528 "configparser.c"
+       break;
+     case 36:
+-#line 136 "../../src/configparser.y"
++#line 136 "./configparser.y"
+ { (yypminor->yy41)->free((yypminor->yy41)); }
+ #line 533 "configparser.c"
+       break;
+     case 37:
+-#line 137 "../../src/configparser.y"
++#line 137 "./configparser.y"
+ { (yypminor->yy41)->free((yypminor->yy41)); }
+ #line 538 "configparser.c"
+       break;
+     case 39:
+-#line 138 "../../src/configparser.y"
++#line 138 "./configparser.y"
+ { array_free((yypminor->yy40)); }
+ #line 543 "configparser.c"
+       break;
+     case 40:
+-#line 139 "../../src/configparser.y"
++#line 139 "./configparser.y"
+ { array_free((yypminor->yy40)); }
+ #line 548 "configparser.c"
+       break;
+     case 41:
+-#line 140 "../../src/configparser.y"
++#line 140 "./configparser.y"
+ { buffer_free((yypminor->yy43)); }
+ #line 553 "configparser.c"
+       break;
+     case 42:
+-#line 141 "../../src/configparser.y"
++#line 141 "./configparser.y"
+ { buffer_free((yypminor->yy43)); }
+ #line 558 "configparser.c"
+       break;
+@@ -823,7 +823,7 @@ static void yy_reduce(
+         /* No destructor defined for global */
+         break;
+       case 5:
+-#line 117 "../../src/configparser.y"
++#line 117 "./configparser.y"
+ { yymsp[-1].minor.yy78 = NULL; }
+ #line 828 "configparser.c"
+   yy_destructor(1,&yymsp[0].minor);
+@@ -838,7 +838,7 @@ static void yy_reduce(
+   yy_destructor(1,&yymsp[0].minor);
+         break;
+       case 9:
+-#line 146 "../../src/configparser.y"
++#line 146 "./configparser.y"
+ {
+   if (ctx->ok) {
+     buffer_copy_string_buffer(yymsp[0].minor.yy41->key, yymsp[-2].minor.yy43);
+@@ -866,7 +866,7 @@ static void yy_reduce(
+   yy_destructor(2,&yymsp[-1].minor);
+         break;
+       case 10:
+-#line 170 "../../src/configparser.y"
++#line 170 "./configparser.y"
+ {
+   array *vars = ctx->current->value;
+   data_unset *du;
+@@ -909,7 +909,7 @@ static void yy_reduce(
+   yy_destructor(3,&yymsp[-1].minor);
+         break;
+       case 11:
+-#line 209 "../../src/configparser.y"
++#line 209 "./configparser.y"
+ {
+   if (strchr(yymsp[0].minor.yy0->ptr, '.') == NULL) {
+     yygotominor.yy43 = buffer_init_string("var.");
+@@ -924,7 +924,7 @@ static void yy_reduce(
+ #line 924 "configparser.c"
+         break;
+       case 12:
+-#line 221 "../../src/configparser.y"
++#line 221 "./configparser.y"
+ {
+   yygotominor.yy41 = configparser_merge_data(yymsp[-2].minor.yy41, yymsp[0].minor.yy41);
+   if (NULL == yygotominor.yy41) {
+@@ -938,7 +938,7 @@ static void yy_reduce(
+   yy_destructor(5,&yymsp[-1].minor);
+         break;
+       case 13:
+-#line 231 "../../src/configparser.y"
++#line 231 "./configparser.y"
+ {
+   yygotominor.yy41 = yymsp[0].minor.yy41;
+   yymsp[0].minor.yy41 = NULL;
+@@ -946,7 +946,7 @@ static void yy_reduce(
+ #line 946 "configparser.c"
+         break;
+       case 14:
+-#line 236 "../../src/configparser.y"
++#line 236 "./configparser.y"
+ {
+   yygotominor.yy41 = NULL;
+   if (strncmp(yymsp[0].minor.yy43->ptr, "env.", sizeof("env.") - 1) == 0) {
+@@ -976,7 +976,7 @@ static void yy_reduce(
+ #line 976 "configparser.c"
+         break;
+       case 15:
+-#line 263 "../../src/configparser.y"
++#line 263 "./configparser.y"
+ {
+   yygotominor.yy41 = (data_unset *)data_string_init();
+   buffer_copy_string_buffer(((data_string *)(yygotominor.yy41))->value, yymsp[0].minor.yy0);
+@@ -986,7 +986,7 @@ static void yy_reduce(
+ #line 986 "configparser.c"
+         break;
+       case 16:
+-#line 270 "../../src/configparser.y"
++#line 270 "./configparser.y"
+ {
+   yygotominor.yy41 = (data_unset *)data_integer_init();
+   ((data_integer *)(yygotominor.yy41))->value = strtol(yymsp[0].minor.yy0->ptr, NULL, 10);
+@@ -996,7 +996,7 @@ static void yy_reduce(
+ #line 996 "configparser.c"
+         break;
+       case 17:
+-#line 276 "../../src/configparser.y"
++#line 276 "./configparser.y"
+ {
+   yygotominor.yy41 = (data_unset *)data_array_init();
+   array_free(((data_array *)(yygotominor.yy41))->value);
+@@ -1006,7 +1006,7 @@ static void yy_reduce(
+ #line 1006 "configparser.c"
+         break;
+       case 18:
+-#line 282 "../../src/configparser.y"
++#line 282 "./configparser.y"
+ {
+   yygotominor.yy40 = array_init();
+ }
+@@ -1015,7 +1015,7 @@ static void yy_reduce(
+   yy_destructor(9,&yymsp[0].minor);
+         break;
+       case 19:
+-#line 285 "../../src/configparser.y"
++#line 285 "./configparser.y"
+ {
+   yygotominor.yy40 = yymsp[-1].minor.yy40;
+   yymsp[-1].minor.yy40 = NULL;
+@@ -1025,7 +1025,7 @@ static void yy_reduce(
+   yy_destructor(9,&yymsp[0].minor);
+         break;
+       case 20:
+-#line 290 "../../src/configparser.y"
++#line 290 "./configparser.y"
+ {
+   if (buffer_is_empty(yymsp[0].minor.yy41->key) ||
+       NULL == array_get_element(yymsp[-2].minor.yy40, yymsp[0].minor.yy41->key->ptr)) {
+@@ -1046,7 +1046,7 @@ static void yy_reduce(
+   yy_destructor(10,&yymsp[-1].minor);
+         break;
+       case 21:
+-#line 307 "../../src/configparser.y"
++#line 307 "./configparser.y"
+ {
+   yygotominor.yy40 = yymsp[-1].minor.yy40;
+   yymsp[-1].minor.yy40 = NULL;
+@@ -1055,7 +1055,7 @@ static void yy_reduce(
+   yy_destructor(10,&yymsp[0].minor);
+         break;
+       case 22:
+-#line 312 "../../src/configparser.y"
++#line 312 "./configparser.y"
+ {
+   yygotominor.yy40 = array_init();
+   array_insert_unique(yygotominor.yy40, yymsp[0].minor.yy41);
+@@ -1064,7 +1064,7 @@ static void yy_reduce(
+ #line 1064 "configparser.c"
+         break;
+       case 23:
+-#line 318 "../../src/configparser.y"
++#line 318 "./configparser.y"
+ {
+   yygotominor.yy41 = yymsp[0].minor.yy41;
+   yymsp[0].minor.yy41 = NULL;
+@@ -1072,7 +1072,7 @@ static void yy_reduce(
+ #line 1072 "configparser.c"
+         break;
+       case 24:
+-#line 322 "../../src/configparser.y"
++#line 322 "./configparser.y"
+ {
+   buffer_copy_string_buffer(yymsp[0].minor.yy41->key, yymsp[-2].minor.yy43);
+   buffer_free(yymsp[-2].minor.yy43);
+@@ -1090,7 +1090,7 @@ static void yy_reduce(
+       case 26:
+         break;
+       case 27:
+-#line 334 "../../src/configparser.y"
++#line 334 "./configparser.y"
+ {
+   data_config *dc;
+   dc = (data_config *)array_get_element(ctx->srv->config_context, "global");
+@@ -1101,7 +1101,7 @@ static void yy_reduce(
+   yy_destructor(12,&yymsp[0].minor);
+         break;
+       case 28:
+-#line 341 "../../src/configparser.y"
++#line 341 "./configparser.y"
+ {
+   data_config *cur;
+ 
+@@ -1119,7 +1119,7 @@ static void yy_reduce(
+   yy_destructor(14,&yymsp[0].minor);
+         break;
+       case 29:
+-#line 352 "../../src/configparser.y"
++#line 352 "./configparser.y"
+ {
+   if (yymsp[-3].minor.yy78->context_ndx >= yymsp[0].minor.yy78->context_ndx) {
+     fprintf(stderr, "unreachable else condition\n");
+@@ -1136,7 +1136,7 @@ static void yy_reduce(
+   yy_destructor(15,&yymsp[-1].minor);
+         break;
+       case 30:
+-#line 364 "../../src/configparser.y"
++#line 364 "./configparser.y"
+ {
+   yygotominor.yy78 = yymsp[0].minor.yy78;
+   yymsp[0].minor.yy78 = NULL;
+@@ -1144,7 +1144,7 @@ static void yy_reduce(
+ #line 1144 "configparser.c"
+         break;
+       case 31:
+-#line 369 "../../src/configparser.y"
++#line 369 "./configparser.y"
+ {
+   data_config *cur;
+ 
+@@ -1162,7 +1162,7 @@ static void yy_reduce(
+   yy_destructor(14,&yymsp[0].minor);
+         break;
+       case 32:
+-#line 380 "../../src/configparser.y"
++#line 380 "./configparser.y"
+ {
+   data_config *dc;
+   buffer *b, *rvalue, *op;
+@@ -1318,7 +1318,7 @@ static void yy_reduce(
+   yy_destructor(19,&yymsp[-2].minor);
+         break;
+       case 33:
+-#line 529 "../../src/configparser.y"
++#line 529 "./configparser.y"
+ {
+   yygotominor.yy27 = CONFIG_COND_EQ;
+ }
+@@ -1326,7 +1326,7 @@ static void yy_reduce(
+   yy_destructor(20,&yymsp[0].minor);
+         break;
+       case 34:
+-#line 532 "../../src/configparser.y"
++#line 532 "./configparser.y"
+ {
+   yygotominor.yy27 = CONFIG_COND_MATCH;
+ }
+@@ -1334,7 +1334,7 @@ static void yy_reduce(
+   yy_destructor(21,&yymsp[0].minor);
+         break;
+       case 35:
+-#line 535 "../../src/configparser.y"
++#line 535 "./configparser.y"
+ {
+   yygotominor.yy27 = CONFIG_COND_NE;
+ }
+@@ -1342,7 +1342,7 @@ static void yy_reduce(
+   yy_destructor(22,&yymsp[0].minor);
+         break;
+       case 36:
+-#line 538 "../../src/configparser.y"
++#line 538 "./configparser.y"
+ {
+   yygotominor.yy27 = CONFIG_COND_NOMATCH;
+ }
+@@ -1350,7 +1350,7 @@ static void yy_reduce(
+   yy_destructor(23,&yymsp[0].minor);
+         break;
+       case 37:
+-#line 542 "../../src/configparser.y"
++#line 542 "./configparser.y"
+ {
+   yygotominor.yy43 = NULL;
+   if (ctx->ok) {
+@@ -1370,7 +1370,7 @@ static void yy_reduce(
+ #line 1370 "configparser.c"
+         break;
+       case 38:
+-#line 559 "../../src/configparser.y"
++#line 559 "./configparser.y"
+ {
+   if (ctx->ok) {
+     if (0 != config_parse_file(ctx->srv, ctx, yymsp[0].minor.yy43->ptr)) {
+@@ -1384,7 +1384,7 @@ static void yy_reduce(
+   yy_destructor(24,&yymsp[-1].minor);
+         break;
+       case 39:
+-#line 569 "../../src/configparser.y"
++#line 569 "./configparser.y"
+ {
+   if (ctx->ok) {
+     if (0 != config_parse_cmd(ctx->srv, ctx, yymsp[0].minor.yy43->ptr)) {
+@@ -1424,7 +1424,7 @@ static void yy_parse_failed(
+   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
+   /* Here code is inserted which will be executed whenever the
+   ** parser fails */
+-#line 108 "../../src/configparser.y"
++#line 108 "./configparser.y"
+ 
+   ctx->ok = 0;
+ 
 diff --git a/src/connections-glue.c b/src/connections-glue.c
 index 5ef7a1e..90fb7d4 100644
 --- a/src/connections-glue.c
@@ -103,10 +446,10 @@ index 5ef7a1e..90fb7d4 100644
  	}
  }
 diff --git a/src/connections.c b/src/connections.c
-index 8a2774d..6fb0f27 100644
+index bbaa632..4ad8483 100644
 --- a/src/connections.c
 +++ b/src/connections.c
-@@ -1152,6 +1152,8 @@ found_header_end:
+@@ -1150,6 +1150,8 @@ found_header_end:
  		}
  
  		break;
@@ -115,7 +458,7 @@ index 8a2774d..6fb0f27 100644
  	default: break;
  	}
  
-@@ -1226,7 +1228,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
+@@ -1224,7 +1226,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
  	}
  
  	if (con->state == CON_STATE_READ ||
@@ -125,8 +468,8 @@ index 8a2774d..6fb0f27 100644
  		connection_handle_read_state(srv, con);
  	}
  
-@@ -1479,6 +1482,9 @@ int connection_state_machine(server *srv, connection *con) {
- 				done = -1;
+@@ -1478,6 +1481,9 @@ int connection_state_machine(server *srv, connection *con) {
+ 				/* fallthrough */
  			case HANDLER_WAIT_FOR_EVENT:
  				/* come back here */
 +				if (con->state == CON_STATE_READ_CONTINUOUS) {
@@ -135,7 +478,7 @@ index 8a2774d..6fb0f27 100644
  				connection_set_state(srv, con, CON_STATE_HANDLE_REQUEST);
  
  				break;
-@@ -1618,12 +1624,16 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1617,12 +1623,16 @@ int connection_state_machine(server *srv, connection *con) {
  			break;
  		case CON_STATE_READ_POST:
  		case CON_STATE_READ:
@@ -152,7 +495,7 @@ index 8a2774d..6fb0f27 100644
  			break;
  		case CON_STATE_WRITE:
  			if (srv->srvconf.log_state_handling) {
-@@ -1792,6 +1802,9 @@ int connection_state_machine(server *srv, connection *con) {
+@@ -1791,6 +1801,9 @@ int connection_state_machine(server *srv, connection *con) {
  			fdevent_event_del(srv->ev, &(con->fde_ndx), con->fd);
  		}
  		break;
@@ -162,12 +505,175 @@ index 8a2774d..6fb0f27 100644
  	default:
  		fdevent_event_del(srv->ev, &(con->fde_ndx), con->fd);
  		break;
+diff --git a/src/mod_ssi_exprparser.c b/src/mod_ssi_exprparser.c
+index cd88eda..3efe99d 100644
+--- a/src/mod_ssi_exprparser.c
++++ b/src/mod_ssi_exprparser.c
+@@ -4,7 +4,7 @@
+ /* First off, code is include which follows the "include" declaration
+ ** in the input file. */
+ #include <stdio.h>
+-#line 6 "../../src/mod_ssi_exprparser.y"
++#line 6 "./mod_ssi_exprparser.y"
+ 
+ #include "mod_ssi_expr.h"
+ #include "buffer.h"
+@@ -347,7 +347,7 @@ static void yy_destructor(YYCODETYPE yymajor, YYMINORTYPE *yypminor){
+     case 10:
+     case 11:
+     case 12:
+-#line 22 "../../src/mod_ssi_exprparser.y"
++#line 22 "./mod_ssi_exprparser.y"
+ { buffer_free((yypminor->yy0)); }
+ #line 352 "mod_ssi_exprparser.c"
+       break;
+@@ -578,7 +578,7 @@ static void yy_reduce(
+   **     break;
+   */
+       case 0:
+-#line 29 "../../src/mod_ssi_exprparser.y"
++#line 29 "./mod_ssi_exprparser.y"
+ {
+   ctx->val.bo = ssi_val_tobool(yymsp[0].minor.yy29);
+   ctx->val.type = SSI_TYPE_BOOL;
+@@ -588,7 +588,7 @@ static void yy_reduce(
+ #line 588 "mod_ssi_exprparser.c"
+         break;
+       case 1:
+-#line 36 "../../src/mod_ssi_exprparser.y"
++#line 36 "./mod_ssi_exprparser.y"
+ {
+   int cmp;
+ 
+@@ -617,14 +617,14 @@ static void yy_reduce(
+ #line 617 "mod_ssi_exprparser.c"
+         break;
+       case 2:
+-#line 61 "../../src/mod_ssi_exprparser.y"
++#line 61 "./mod_ssi_exprparser.y"
+ {
+   yygotominor.yy29 = yymsp[0].minor.yy29;
+ }
+ #line 624 "mod_ssi_exprparser.c"
+         break;
+       case 3:
+-#line 64 "../../src/mod_ssi_exprparser.y"
++#line 64 "./mod_ssi_exprparser.y"
+ {
+   int e;
+ 
+@@ -639,7 +639,7 @@ static void yy_reduce(
+   yy_destructor(1,&yymsp[-1].minor);
+         break;
+       case 4:
+-#line 75 "../../src/mod_ssi_exprparser.y"
++#line 75 "./mod_ssi_exprparser.y"
+ {
+   int e;
+ 
+@@ -654,7 +654,7 @@ static void yy_reduce(
+   yy_destructor(2,&yymsp[-1].minor);
+         break;
+       case 5:
+-#line 86 "../../src/mod_ssi_exprparser.y"
++#line 86 "./mod_ssi_exprparser.y"
+ {
+   int e;
+ 
+@@ -668,7 +668,7 @@ static void yy_reduce(
+   yy_destructor(9,&yymsp[-1].minor);
+         break;
+       case 6:
+-#line 95 "../../src/mod_ssi_exprparser.y"
++#line 95 "./mod_ssi_exprparser.y"
+ {
+   yygotominor.yy29 = yymsp[-1].minor.yy29;
+ }
+@@ -677,7 +677,7 @@ static void yy_reduce(
+   yy_destructor(11,&yymsp[0].minor);
+         break;
+       case 7:
+-#line 99 "../../src/mod_ssi_exprparser.y"
++#line 99 "./mod_ssi_exprparser.y"
+ {
+   yygotominor.yy29 = ssi_val_init();
+   yygotominor.yy29->str = yymsp[0].minor.yy19;
+@@ -686,14 +686,14 @@ static void yy_reduce(
+ #line 686 "mod_ssi_exprparser.c"
+         break;
+       case 8:
+-#line 105 "../../src/mod_ssi_exprparser.y"
++#line 105 "./mod_ssi_exprparser.y"
+ {
+   yygotominor.yy19 = yymsp[0].minor.yy0;
+ }
+ #line 693 "mod_ssi_exprparser.c"
+         break;
+       case 9:
+-#line 109 "../../src/mod_ssi_exprparser.y"
++#line 109 "./mod_ssi_exprparser.y"
+ {
+   yygotominor.yy19 = yymsp[-1].minor.yy19;
+   buffer_append_string_buffer(yygotominor.yy19, yymsp[0].minor.yy0);
+@@ -702,37 +702,37 @@ static void yy_reduce(
+ #line 702 "mod_ssi_exprparser.c"
+         break;
+       case 10:
+-#line 115 "../../src/mod_ssi_exprparser.y"
++#line 115 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_EQ; }
+ #line 707 "mod_ssi_exprparser.c"
+   yy_destructor(3,&yymsp[0].minor);
+         break;
+       case 11:
+-#line 116 "../../src/mod_ssi_exprparser.y"
++#line 116 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_NE; }
+ #line 713 "mod_ssi_exprparser.c"
+   yy_destructor(4,&yymsp[0].minor);
+         break;
+       case 12:
+-#line 117 "../../src/mod_ssi_exprparser.y"
++#line 117 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_LE; }
+ #line 719 "mod_ssi_exprparser.c"
+   yy_destructor(8,&yymsp[0].minor);
+         break;
+       case 13:
+-#line 118 "../../src/mod_ssi_exprparser.y"
++#line 118 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_GE; }
+ #line 725 "mod_ssi_exprparser.c"
+   yy_destructor(6,&yymsp[0].minor);
+         break;
+       case 14:
+-#line 119 "../../src/mod_ssi_exprparser.y"
++#line 119 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_LT; }
+ #line 731 "mod_ssi_exprparser.c"
+   yy_destructor(7,&yymsp[0].minor);
+         break;
+       case 15:
+-#line 120 "../../src/mod_ssi_exprparser.y"
++#line 120 "./mod_ssi_exprparser.y"
+ { yygotominor.yy8 = SSI_COND_GT; }
+ #line 737 "mod_ssi_exprparser.c"
+   yy_destructor(5,&yymsp[0].minor);
+@@ -764,7 +764,7 @@ static void yy_parse_failed(
+   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
+   /* Here code is inserted which will be executed whenever the
+   ** parser fails */
+-#line 14 "../../src/mod_ssi_exprparser.y"
++#line 14 "./mod_ssi_exprparser.y"
+ 
+   ctx->ok = 0;
+ 
 diff --git a/src/mod_websocket.c b/src/mod_websocket.c
 new file mode 100644
-index 0000000..34e831d
+index 0000000..df4c628
 --- /dev/null
 +++ b/src/mod_websocket.c
-@@ -0,0 +1,838 @@
+@@ -0,0 +1,879 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -349,7 +855,7 @@ index 0000000..34e831d
 +                      info.peer.addr, ":", info.peer.port, "( fd =", hctx->con->fd, ") ->",
 +                      host->ptr, ":", port->ptr, "( fd =", hctx->fd, ")");
 +        } else {
-+            DEBUG_LOG(MOD_WEBSOCKET_LOG_INFO, "ss", "connected");
++            DEBUG_LOG(MOD_WEBSOCKET_LOG_INFO, "s", "connected");
 +        }
 +    }
 +    buffer_free(port);
@@ -510,6 +1016,43 @@ index 0000000..34e831d
 +        log_error_write(srv, __FILE__, __LINE__, "sss",
 +                        con->uri.path->ptr, "is match WebSocket extension:", ext->key->ptr);
 +    }
++
++    array *hdrs = NULL;
++    data_string *hdr = NULL;
++    buffer *connection_hdr_value = NULL;
++    buffer *upgrade_hdr_value = NULL;
++
++    hdrs = con->request.headers;
++    for (i = hdrs->used; i > 0; i--) {
++        hdr = (data_string *)hdrs->data[i - 1];
++        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Connection"))) {
++            connection_hdr_value = buffer_init_buffer(hdr->value);
++            buffer_to_lower(connection_hdr_value);
++        }
++        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Upgrade"))) {
++            upgrade_hdr_value = buffer_init_buffer(hdr->value);
++            buffer_to_lower(upgrade_hdr_value);
++        }
++    }
++    /*
++     * Connection: upgrade, keep-alive, ...
++     * Upgrade: WebSocket, ...
++     */
++    if (buffer_is_empty(connection_hdr_value) ||
++        buffer_is_empty(upgrade_hdr_value) ||
++        strstr(connection_hdr_value->ptr, "upgrade") == NULL ||
++        strstr(upgrade_hdr_value->ptr, "websocket") == NULL) {
++        if (p->conf.debug >= MOD_WEBSOCKET_LOG_INFO) {
++            log_error_write(srv, __FILE__, __LINE__, "ss",
++                            con->uri.path->ptr, "is not WebSocket Request");
++        }
++        buffer_free(connection_hdr_value);
++        buffer_free(upgrade_hdr_value);
++        return HANDLER_GO_ON;
++    }
++    buffer_free(connection_hdr_value);
++    buffer_free(upgrade_hdr_value);
++
 +    /* init handler-context */
 +    hctx = handler_ctx_init();
 +    if (!hctx) {
@@ -651,9 +1194,7 @@ index 0000000..34e831d
 +        /* check request */
 +        err = mod_websocket_handshake_check_request(hctx);
 +        /* not my job */
-+        if (err == MOD_WEBSOCKET_PRECONDITION_FAILED) {
-+            return HANDLER_GO_ON;
-+        } else if (err != MOD_WEBSOCKET_OK) {
++        if (err != MOD_WEBSOCKET_OK) {
 +            hctx->con->http_status = err;
 +            hctx->con->mode = DIRECT;
 +            return HANDLER_FINISHED;
@@ -790,6 +1331,9 @@ index 0000000..34e831d
 +            if (!chunkqueue_is_empty(hctx->fromcli)) {
 +                hctx->timeout_cnt = 0;
 +                if (mod_websocket_frame_recv(hctx) < 0) {
++                    if (hctx->mode == MOD_WEBSOCKET_WEBSOCKET_PROXY) {
++                        break;
++                    }
 +                    if (((server_socket *)(hctx->con->srv_socket))->is_ssl) {
 +
 +#ifdef	USE_OPENSSL
@@ -830,6 +1374,9 @@ index 0000000..34e831d
 +        }
 +        if (hctx->fd < 0) {
 +            chunkqueue_reset(hctx->tocli);
++            if (hctx->mode == MOD_WEBSOCKET_WEBSOCKET_PROXY) {
++                break;
++            }
 +            if (((server_socket *)(hctx->con->srv_socket))->is_ssl) {
 +
 +#ifdef	USE_OPENSSL
@@ -1008,10 +1555,10 @@ index 0000000..34e831d
 +/* EOF */
 diff --git a/src/mod_websocket.h b/src/mod_websocket.h
 new file mode 100644
-index 0000000..1b36a22
+index 0000000..d6b69bb
 --- /dev/null
 +++ b/src/mod_websocket.h
-@@ -0,0 +1,214 @@
+@@ -0,0 +1,213 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + *
@@ -1084,7 +1631,6 @@ index 0000000..1b36a22
 +    GEN(BAD_REQUEST, 400)               \
 +    GEN(FORBIDDEN, 403)                 \
 +    GEN(NOT_FOUND, 404)                 \
-+    GEN(PRECONDITION_FAILED, 412)       \
 +    GEN(INTERNAL_SERVER_ERROR, 500)     \
 +    GEN(SERVICE_UNAVAILABLE, 503)
 +
@@ -1976,10 +2522,10 @@ index 0000000..ac43f13
 +}
 diff --git a/src/mod_websocket_handshake.c b/src/mod_websocket_handshake.c
 new file mode 100644
-index 0000000..100795e
+index 0000000..08f0188
 --- /dev/null
 +++ b/src/mod_websocket_handshake.c
-@@ -0,0 +1,565 @@
+@@ -0,0 +1,547 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -2131,8 +2677,6 @@ index 0000000..100795e
 +    array *hdrs;
 +    data_string *hdr = NULL;
 +    mod_websocket_handshake_t *handshake;
-+    buffer *connection_hdr_value = NULL;
-+    buffer *upgrade_hdr_value = NULL;
 +    buffer *version_hdr_value = NULL;
 +
 +    if (hctx == NULL || hctx->con == NULL) {
@@ -2144,48 +2688,32 @@ index 0000000..100795e
 +    /* store necessary headers */
 +    for (i = hdrs->used; i > 0; i--) {
 +        hdr = (data_string *)hdrs->data[i - 1];
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Connection"))) {
-+            connection_hdr_value = hdr->value;
-+        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Upgrade"))) {
-+            upgrade_hdr_value = hdr->value;
-+        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Host"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Host"))) {
 +            handshake->host = hdr->value;
 +        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Version"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Version"))) {
 +            version_hdr_value = hdr->value;
 +        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Origin")) ||
-+            buffer_is_equal_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Origin"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Origin")) ||
++            buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Origin"))) {
 +            handshake->origin = hdr->value;
 +        }
 +
 +#ifdef	_MOD_WEBSOCKET_SPEC_IETF_00_
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key1"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key1"))) {
 +            handshake->key1 = hdr->value;
 +        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key2"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key2"))) {
 +            handshake->key2 = hdr->value;
 +        }
 +#endif	/* _MOD_WEBSOCKET_SPEC_IETF_00_ */
 +
 +#ifdef	_MOD_WEBSOCKET_SPEC_RFC_6455_
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("Sec-WebSocket-Key"))) {
 +            handshake->key = hdr->value;
 +        }
 +#endif	/* _MOD_WEBSOCKET_SPEC_RFC_6455_ */
 +
-+    }
-+    /* check store headers */
-+    if (buffer_is_empty(connection_hdr_value) || buffer_is_empty(upgrade_hdr_value)) {
-+        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "not WebSocket request");
-+        return MOD_WEBSOCKET_PRECONDITION_FAILED;
-+    }
-+    /* firefox: Connection: upgrade, keep-alive */
-+    if (strcasestr(connection_hdr_value->ptr, "upgrade") == NULL) {
-+        DEBUG_LOG(MOD_WEBSOCKET_LOG_DEBUG, "s", "not WebSocket request");
-+        return MOD_WEBSOCKET_PRECONDITION_FAILED;
 +    }
 +    if (buffer_is_empty(handshake->host)) {
 +        DEBUG_LOG(MOD_WEBSOCKET_LOG_ERR, "s", "Host header does not exist");
@@ -2456,13 +2984,13 @@ index 0000000..100795e
 +    hdrs = hctx->con->request.headers;
 +    for (i = hdrs->used; i > 0; i--) {
 +        hdr = (data_string *)hdrs->data[i - 1];
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("X-Forwarded-Proto"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("X-Forwarded-Proto"))) {
 +            x_forwarded_proto = hdr;
 +        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("X-Forwarded-For"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("X-Forwarded-For"))) {
 +            x_forwarded_for = hdr;
 +        }
-+        if (buffer_is_equal_string(hdr->key, CONST_STR_LEN("X-Forwarded-Port"))) {
++        if (buffer_is_equal_caseless_string(hdr->key, CONST_STR_LEN("X-Forwarded-Port"))) {
 +            x_forwarded_port = hdr;
 +        }
 +    }
@@ -2799,10 +3327,10 @@ index 0000000..fb400fc
 +#endif
 diff --git a/src/mod_websocket_socket.c b/src/mod_websocket_socket.c
 new file mode 100644
-index 0000000..020c00d
+index 0000000..6a17207
 --- /dev/null
 +++ b/src/mod_websocket_socket.c
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,104 @@
 +/*
 + * Copyright(c) 2010, Norio Kobota, All rights reserved.
 + */
@@ -2817,6 +3345,7 @@ index 0000000..020c00d
 +#include <sys/socket.h>
 +#include <netdb.h>
 +#include <errno.h>
++#include <poll.h>
 +
 +#include "mod_websocket_socket.h"
 +
@@ -2824,84 +3353,51 @@ index 0000000..020c00d
 +    struct addrinfo hints;
 +    struct addrinfo *res = NULL;
 +    struct addrinfo *ai = NULL;
-+    struct fdlist {
-+        int fd;
-+        struct fdlist *next;
-+    };
-+    struct fdlist *head = NULL, *p, *pn, *fde = NULL;
-+    int flags, fd, maxfd = -1, connfd = -1, sockret = -1;
++    int flags, fd = -1, sockret = -1;
 +    socklen_t socklen = sizeof(sockret);
-+    fd_set fds;
-+    struct timeval tv;
++    struct pollfd pollfd;
 +
 +    memset(&hints, 0, sizeof(hints));
 +    hints.ai_family = AF_UNSPEC;
 +    hints.ai_socktype = SOCK_STREAM;
 +    hints.ai_flags = 0;
-+
 +    if (getaddrinfo(host, service, &hints, &res) != 0) {
 +        return -1;
 +    }
-+    FD_ZERO(&fds);
 +    for (ai = res; ai; ai = ai->ai_next) {
 +        fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 +        if (fd < 0) {
-+            goto go_out;
++            break;
 +        }
 +        if ((flags = fcntl(fd, F_GETFL, 0)) < 0 ||
 +            fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
 +            close(fd);
-+            goto go_out;
++            fd = -1;
++            continue;
 +        }
-+        fde = (struct fdlist *)malloc(sizeof(struct fdlist));
-+        if (!fde) {
++        pollfd.fd = fd;
++        pollfd.events = POLLOUT;
++        if (connect(fd, ai->ai_addr, ai->ai_addrlen) < 0 &&
++            errno != EINPROGRESS) {
 +            close(fd);
-+            goto go_out;
++            fd = -1;
++            continue;
 +        }
-+        fde->fd = fd;
-+        fde->next = head;
-+        head = fde;
-+        if (fde->fd > maxfd) {
-+            maxfd = fde->fd;
++        if (poll(&pollfd, 1, 5000) == 0) {
++            close(fd);
++            fd = -1;
++            continue;
 +        }
-+        FD_SET(fde->fd, &fds);
-+        if (connect(fde->fd, ai->ai_addr, ai->ai_addrlen) < 0) {
-+            if (errno != EINPROGRESS) {
-+                goto go_out;
-+            }
++        if ((pollfd.revents & POLLOUT) &&
++            getsockopt(fd, SOL_SOCKET, SO_ERROR, &sockret, &socklen) == 0 &&
++            sockret == 0 ) {
++            break;
 +        }
-+    }
-+    /* connect timeout is to set 5 secs */
-+    tv.tv_sec = 5;
-+    tv.tv_usec = 0;
-+    if (select(maxfd + 1, NULL, &fds, NULL, &tv) == 0) {
-+        goto go_out;
-+    } else {
-+        for (p = head; p; p = p->next) {
-+            if (!FD_ISSET(p->fd, &fds)) {
-+                continue;
-+            }
-+            if (getsockopt(p->fd, SOL_SOCKET, SO_ERROR,
-+                           &sockret, &socklen) == 0 &&
-+                sockret == 0) {
-+                connfd = p->fd;
-+                break;
-+            }
-+        }
-+    }
-+
-+ go_out:
-+    p = head;
-+    while (p) {
-+        if (p->fd != connfd) {
-+            close(p->fd);
-+        }
-+        pn = p->next;
-+        free(p);
-+        p = pn;
++        close(fd);
++        fd = -1;
 +    }
 +    freeaddrinfo(res);
-+    return connfd;
++    return fd;
 +}
 +
 +void mod_websocket_disconnect(int fd) {
