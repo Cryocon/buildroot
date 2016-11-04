@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ip route add default dev eth0 && echo "Howdy" || echo "Oops"
