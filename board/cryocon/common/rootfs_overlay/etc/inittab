@@ -31,6 +31,7 @@ null::sysinit:/bin/hostname -F /etc/hostname
 
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
+::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8001 web_service:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
 
