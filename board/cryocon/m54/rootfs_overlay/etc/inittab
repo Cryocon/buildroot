@@ -13,6 +13,14 @@
 # action    == one of sysinit, respawn, askfirst, wait, and once
 # process   == program to run
 
+# NOTE WELL
+# The actual sequence is:
+# * sysinit (with blocking)
+# * wait (with blocking)
+# * once (without blocking)
+# * respawn (without blocking)
+# * askfirst
+
 # Startup the system
 null::sysinit:/bin/mount -t proc proc /proc
 #null::sysinit:/bin/mount -o remount,rw / # REMOUNT_ROOTFS_RW
@@ -24,13 +32,6 @@ null::sysinit:/bin/mount -a
 ::sysinit:/usr/bin/psplash -n &
 ::sysinit:/bin/echo 6 > /sys/class/backlight/backlight/brightness
 null::sysinit:/bin/hostname -F /etc/hostname
-::once:/sbin/modprobe ft5x06-ts
-
-# now run any rc scripts
-::once:/etc/init.d/rcS
-
-# must run after udev is started
-::once:/usr/bin/update-fpga0.sh
 
 ::sysinit:/sbin/modprobe xilinx-sscu
 ::sysinit:/usr/bin/load_fpga /boot/fpga1.bit /dev/fpga1
@@ -40,8 +41,16 @@ null::sysinit:/bin/hostname -F /etc/hostname
 ::sysinit:/sbin/modprobe uio_pdrv_genirq of_id="adc_rdy_n,uio-pdrv-genirq"
 ::sysinit:/sbin/modprobe spi-atmel
 
-::respawn:env DISPLAY=:0 /usr/bin/cryocond
 ::sysinit:/bin/mkdir -p /tmp/.X11-unix
+
+# now run any rc scripts
+::once:/sbin/modprobe ft5x06-ts
+::once:/etc/init.d/rcS
+# must run after udev is started
+::once:/usr/bin/update-fpga0.sh
+
+# start must-have processes
+::respawn:env DISPLAY=:0 /usr/bin/cryocond
 ::respawn:/usr/bin/Xorg -background none
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
 ::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8001 web_service:app" - www-data
