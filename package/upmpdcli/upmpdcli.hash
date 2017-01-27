@@ -1,2 +1,2 @@
-# Hashes from: http://www.lesbonscomptes.com/upmpdcli/downloads/upmpdcli-0.13.1.tar.gz.sha256
-sha256 86f964e49b0288a4d660aa4ad83576d83aad7c354df67d3aa8e324e8912876e0  upmpdcli-0.13.1.tar.gz
+# Manually calculated:
+sha256  a788796e634e243a5ac11db3b19ea872d2bff4d5fb673d058ab7a683ca029dae  upmpdcli-1.2.8.tar.gz

@@ -5,8 +5,8 @@
 ################################################################################
 
 SQUID_VERSION_MAJOR = 3.5
-SQUID_VERSION = $(SQUID_VERSION_MAJOR).15
-SQUID_SOURCE = squid-$(SQUID_VERSION).tar.bz2
+SQUID_VERSION = $(SQUID_VERSION_MAJOR).23
+SQUID_SOURCE = squid-$(SQUID_VERSION).tar.xz
 SQUID_SITE = http://www.squid-cache.org/Versions/v3/$(SQUID_VERSION_MAJOR)
 SQUID_LICENSE = GPLv2+
 SQUID_LICENSE_FILES = COPYING
@@ -25,7 +25,7 @@ SQUID_CONF_ENV = \
 	BUILDCXXFLAGS="$(HOST_CXXFLAGS)"
 SQUID_CONF_OPTS = \
 	--enable-async-io=8 \
-	--enable-linux-netfilter \
+	$(if $(BR2_TOOLCHAIN_USES_MUSL),--disable-linux-netfilter,--enable-linux-netfilter) \
 	--enable-removal-policies="lru,heap" \
 	--with-filedescriptors=1024 \
 	--disable-ident-lookups \

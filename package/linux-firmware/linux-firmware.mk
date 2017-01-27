@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LINUX_FIRMWARE_VERSION = bbe4917c054eb0a73e250c6363341e3bf6725839
+LINUX_FIRMWARE_VERSION = a179db97914da5e650c21ba8f9b0bae04a0f8a41
 LINUX_FIRMWARE_SITE = http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 LINUX_FIRMWARE_SITE_METHOD = git
 
@@ -17,6 +17,12 @@ endif
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_RADEON),y)
 LINUX_FIRMWARE_DIRS += radeon
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENSE.radeon
+endif
+
+# Intel Wireless Bluetooth
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IBT),y)
+LINUX_FIRMWARE_FILES += intel/ibt-*
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.ibt_firmware
 endif
 
 # rt2501/rt61
@@ -87,7 +93,7 @@ endif
 
 # ar7010
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_7010),y)
-LINUX_FIRMWARE_FILES += ar7010.fw ar7010_1_1.fw htc_7010.fw
+LINUX_FIRMWARE_FILES += ar7010.fw ar7010_1_1.fw htc_7010.fw ath9k_htc/htc_7010-1.4.0.fw
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.atheros_firmware
 endif
 
@@ -99,7 +105,7 @@ endif
 
 # ar9271
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_9271),y)
-LINUX_FIRMWARE_FILES += ar9271.fw htc_9271.fw
+LINUX_FIRMWARE_FILES += ar9271.fw htc_9271.fw ath9k_htc/htc_9271-1.4.0.fw
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.atheros_firmware
 endif
 
@@ -141,6 +147,12 @@ LINUX_FIRMWARE_FILES += mrvl/usb8797_uapsta.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.Marvell
 endif
 
+# usb8801
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_MWIFIEX_USB8801),y)
+LINUX_FIRMWARE_FILES += mrvl/usb8801_uapsta.bin
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.Marvell
+endif
+
 # sd8887
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_MWIFIEX_SD8887),y)
 LINUX_FIRMWARE_FILES += mrvl/sd8887_uapsta.bin
@@ -163,6 +175,12 @@ endif
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_MWIFIEX_PCIE8897),y)
 LINUX_FIRMWARE_FILES += mrvl/pcie8897_uapsta.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.Marvell
+endif
+
+# MT7601
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7601U),y)
+LINUX_FIRMWARE_FILES += mt7601u.bin
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.ralink_a_mediatek_company_firmware
 endif
 
 # wl127x
@@ -223,7 +241,12 @@ LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.ti-connectivity
 endif
 
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160),y)
-LINUX_FIRMWARE_FILES += iwlwifi-3160-$(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_REV).ucode
+LINUX_FIRMWARE_FILES += iwlwifi-3160-*.ucode
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3168),y)
+LINUX_FIRMWARE_FILES += iwlwifi-3168-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
@@ -241,21 +264,38 @@ LINUX_FIRMWARE_FILES += iwlwifi-6000g2a-6.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_6000G2B),y)
+LINUX_FIRMWARE_FILES += iwlwifi-6000g2b-6.ucode
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
+endif
+
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_7260),y)
-LINUX_FIRMWARE_FILES += iwlwifi-7260-$(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_REV).ucode
+LINUX_FIRMWARE_FILES += iwlwifi-7260-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_7265),y)
-LINUX_FIRMWARE_FILES += iwlwifi-7265-$(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_REV).ucode
+LINUX_FIRMWARE_FILES += iwlwifi-7265-*.ucode
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_7265D),y)
+LINUX_FIRMWARE_FILES += iwlwifi-7265D-*.ucode
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_8000C),y)
+LINUX_FIRMWARE_FILES += iwlwifi-8000C-*.ucode
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_8265),y)
+LINUX_FIRMWARE_FILES += iwlwifi-8265-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_BNX2X),y)
-LINUX_FIRMWARE_FILES += \
-	bnx2x/bnx2x-e1-7.10.51.0.fw \
-	bnx2x/bnx2x-e1h-7.10.51.0.fw \
-	bnx2x/bnx2x-e2-7.10.51.0.fw
+LINUX_FIRMWARE_FILES += bnx2x/*
 # No license file; the license is in the file WHENCE
 # which is installed unconditionally
 endif
@@ -344,13 +384,15 @@ LINUX_FIRMWARE_FILES += \
 	brcm/brcmfmac43242a.bin brcm/brcmfmac43340-sdio.bin \
 	brcm/brcmfmac43362-sdio.bin brcm/brcmfmac43455-sdio.bin \
 	brcm/brcmfmac43569.bin brcm/brcmfmac43570-pcie.bin \
-	brcm/brcmfmac43602-pcie.ap.bin brcm/brcmfmac43602-pcie.bin
+	brcm/brcmfmac43602-pcie.ap.bin brcm/brcmfmac43602-pcie.bin \
+	brcm/brcmfmac43430-sdio.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.broadcom_bcm43xx
 endif
 
 ifneq ($(LINUX_FIRMWARE_FILES),)
 define LINUX_FIRMWARE_INSTALL_FILES
-	$(TAR) c -C $(@D) $(sort $(LINUX_FIRMWARE_FILES)) | \
+	cd $(@D) ; \
+	$(TAR) c $(sort $(LINUX_FIRMWARE_FILES)) | \
 		$(TAR) x -C $(TARGET_DIR)/lib/firmware
 endef
 endif
