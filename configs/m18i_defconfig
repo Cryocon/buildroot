@@ -1,5 +1,6 @@
 BR2_arm=y
 BR2_DL_DIR="~/buildroot_dl"
+BR2_HOST_DIR="$(TOPDIR)/output-host"
 BR2_BACKUP_SITE="http://sources.buildroot.net/"
 BR2_KERNEL_MIRROR="http://www.kernel.org/pub/"
 BR2_LUAROCKS_MIRROR="http://luarocks.org/repositories/rocks"
