@@ -16,4 +16,11 @@ define PYTHON_GUNICORN_EXTRACT_CMDS
 	ln -s ../libev-4.11 $(@D)/libev
 endef
 
+ifneq ($(BR2_PACKAGE_PYTHON3),y)
+define PYTHON_GUNICORN_REMOVE_GAIOHTTP
+        $(RM) $(@D)/gunicorn/workers/_gaiohttp.py
+endef
+PYTHON_GUNICORN_PRE_BUILD_HOOKS += PYTHON_GUNICORN_REMOVE_GAIOHTTP
+endif
+
 $(eval $(python-package))
