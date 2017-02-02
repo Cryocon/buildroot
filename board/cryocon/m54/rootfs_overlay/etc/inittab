@@ -52,8 +52,8 @@ null::sysinit:/bin/hostname -F /etc/hostname
 # start must-have processes
 ::respawn:env DISPLAY=:0 /usr/bin/cryocond
 ::respawn:/usr/bin/Xorg -background none
-::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8000 cryocond:app" - www-data
-::respawn:/bin/su -s /bin/sh -c "/usr/bin/gunicorn -k flask_sockets.worker -b localhost\:8001 web_service:app" - www-data
+::respawn:/bin/su -s /bin/sh -c "/usr/bin/env PYTHONPATH=/usr/lib/python2.7/site-packages/gunicorn-19.4.4-py2.7.egg/:/usr/lib/python2.7/site-packages /usr/bin/python -S -s -B -u /usr/bin/wsgi_gunicorn.py -b localhost\:8000 cryocond:app" - www-data
+::respawn:/bin/su -s /bin/sh -c "/usr/bin/env PYTHONPATH=/usr/lib/python2.7/site-packages/gunicorn-19.4.4-py2.7.egg/:/usr/lib/python2.7/site-packages/gevent-1.0.1-py2.7-linux-x86_64.egg:/usr/lib/python2.7/site-packages /usr/bin/python -S -s -B -u /usr/bin/wsgi_gunicorn.py -b localhost\:8001 -k flask_sockets.worker web_service:app" - www-data
 ::respawn:/usr/sbin/crond -l 1 -f
 ::respawn:/usr/bin/LinkMD
 
