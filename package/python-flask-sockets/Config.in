@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_FLASK_SOCKETS
+	bool "python-flask-sockets"
+	select BR2_PACKAGE_PYTHON_FLASK # runtime
+	select BR2_PACKAGE_PYTHON_GEVENT # runtime
+	select BR2_PACKAGE_PYTHON_GEVENT_WEBSOCKET # runtime
+	help
+	  Elegant WebSockets for your Flask apps.
+
+	  https://github.com/kennethreitz/flask-sockets
