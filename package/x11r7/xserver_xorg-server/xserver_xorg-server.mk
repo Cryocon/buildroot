@@ -69,6 +69,11 @@ XSERVER_XORG_SERVER_CONF_OPTS = \
 	--with-fontrootdir=/usr/share/fonts/X11/ \
 	--$(if $(BR2_PACKAGE_XSERVER_XORG_SERVER_XVFB),en,dis)able-xvfb
 
+ifneq ($(BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW),y)
+XSERVER_XORG_SERVER_CONF_OPTS += \
+	--with-xkb-output=/var/lib/X11/xkb/
+endif
+
 ifeq ($(BR2_PACKAGE_SYSTEMD),y)
 XSERVER_XORG_SERVER_CONF_OPTS += \
 	--with-systemd-daemon \
