@@ -1,3 +1,6 @@
 IMPORT{builtin}="path_id"
-ACTION=="add", ATTR{name}=="spi?*", SUBSYSTEM=="mtd", SYMLINK+="mtd-$attr{name}"
+ACTION=="add", KERNELS=="spi-gpio@0", SUBSYSTEM=="mtd", ATTR{type}=="nor", SYMLINK+="mtd-fpga0"
+ACTION=="add", KERNELS=="spi-gpio@1", SUBSYSTEM=="mtd", ATTR{type}=="nor", SYMLINK+="mtd-fpga1"
+ACTION=="add", ATTR{name}=="spi0.?*", SUBSYSTEM=="mtd", SYMLINK+="mtd-fpga0"
+ACTION=="add", ATTR{name}=="spi1.?*", SUBSYSTEM=="mtd", SYMLINK+="mtd-fpga1"
 
