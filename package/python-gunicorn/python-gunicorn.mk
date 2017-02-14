@@ -6,7 +6,8 @@
 
 PYTHON_GUNICORN_VERSION = 19.4.4
 PYTHON_GUNICORN_SOURCE  = gunicorn-$(PYTHON_GUNICORN_VERSION).tar.gz
-PYTHON_GUNICORN_SITE    = https://pypi.python.org/packages/source/g/gunicorn
+PYTHON_GUNICORN_SITE    = ../src/gunicorn
+PYTHON_GUNICORN_SITE_METHOD=local
 PYTHON_GUNICORN_DEPENDENCIES = libev python-greenlet python-gevent
 PYTHON_GUNICORN_SETUP_TYPE = distutils
 
