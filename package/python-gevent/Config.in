@@ -1,4 +1,9 @@
 config BR2_PACKAGE_PYTHON_GEVENT
 	bool "python-gevent"
-	depends on BR2_PACKAGE_PYTHON
 	select BR2_PACKAGE_LIBEV
+	select BR2_PACKAGE_PYTHON_GREENLET # runtime
+	select BR2_PACKAGE_PYTHON_SETUPTOOLS # runtime
+	help
+	  Coroutine-based network library.
+
+	  http://www.gevent.org/
