@@ -13,3 +13,6 @@
 *.rej
 *~
 *.pyc
+/m54
+/m18i
+/output-host
