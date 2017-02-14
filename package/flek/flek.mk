@@ -6,8 +6,8 @@
 
 FLEK_VERSION = master
 FLEK_SOURCE = flek-$(FLEK_VERSION)-source.tar.gz
-FLEK_SITE = ~/src/flek
-FLEK_SITE_METHOD = git
+FLEK_SITE = ../src/flek
+FLEK_SITE_METHOD = local
 FLEK_INSTALL_STAGING = YES
 FLEK_DEPENDENCIES = fltk
 #FLEK_CONFIG_SCRIPTS = flek-config
