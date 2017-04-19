@@ -13,4 +13,4 @@
 
 # IPython is run as default:users, so notebooks belong to www-data:users
 /var/lib/cryocond/notebooks d 775 0 0	33	100	-	-	-
-
+/var/www/.python-eggs d 775 0 0 33 33 - - -
