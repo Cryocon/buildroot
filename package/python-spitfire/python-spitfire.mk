@@ -4,11 +4,12 @@
 #
 #############################################################
 
-PYTHON_SPITFIRE_VERSION = 163
-#PYTHON_SPITFIRE_SOURCE  = spitfire-$(PYTHON_SPITFIRE_VERSION).tar.gz
-PYTHON_SPITFIRE_SITE    = http://spitfire.googlecode.com/svn/trunk
-PYTHON_SPITFIRE_SITE_METHOD = svn
-PYTHON_SPITFIRE_DEPENDENCIES = python
+PYTHON_SPITFIRE_VERSION = 4591335
+PYTHON_SPITFIRE_SITE    = $(call github,youtube,spitfire,$(PYTHON_SPITFIRE_VERSION))
+PYTHON_SPITFIRE_DEPENDENCIES = host-python-yaml2 python
+PYTHON_SPITFIRE_LICENSE = BSD-3c
+PYTHON_SPITFIRE_LICENSE_FILES = LICENSE
+PYTHON_SPITFIRE_SETUP_TYPE = distutils
 
 define PYTHON_SPITFIRE_BUILD_CMDS
         (cd $(@D); \
@@ -21,7 +22,8 @@ define PYTHON_SPITFIRE_BUILD_CMDS
 endef
 
 define PYTHON_SPITFIRE_INSTALL_TARGET_CMDS
-	(cd $(@D); $(HOST_DIR)/usr/bin/python setup.py install --prefix=$(TARGET_DIR)/usr)
+	(cd $(@D); PYTHONPATH=$(TARGET_DIR)/usr/lib/python2.7/site-packages $(HOST_DIR)/usr/bin/python setup.py install --prefix=$(TARGET_DIR)/usr)
 endef
 
 $(eval $(generic-package))
+$(eval $(host-python-package))
