@@ -30,6 +30,7 @@ null::sysinit:/bin/mkdir -p /dev/shm
 null::sysinit:/bin/mount -a
 ::sysinit:/usr/bin/head -1 /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
 ::sysinit:/usr/bin/psplash -n &
+::sysinit:/usr/bin/progress &
 ::sysinit:/bin/echo 6 > /sys/class/backlight/backlight/brightness
 null::sysinit:/bin/hostname -F /etc/hostname
 
