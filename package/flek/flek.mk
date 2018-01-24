@@ -16,5 +16,6 @@ FLEK_LICENSE_FILES = README
 
 FLEK_CONF_OPTS = --disable-gl --disable-jpeg --with-fltk=$(TARGET_DIR)/usr 
 FLEK_CONF_OPTS += --exec-prefix=$(TARGET_DIR)/usr --prefix=$(STAGING_DIR)/usr
+FLEK_AUTORECONF=YES
 
 $(eval $(autotools-package))
