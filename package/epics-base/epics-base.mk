@@ -9,6 +9,7 @@ EPICS_BASE_SOURCE = base-$(EPICS_BASE_VERSION).tar.gz
 EPICS_BASE_SITE = http://www.aps.anl.gov/epics/download/base
 EPICS_BASE_LICENSE_FILES = LICENSE
 EPICS_BASE_INSTALL_STAGING = YES
+EPICS_BASE_DEPENDENCIES += readline
 
 define HOST_EPICS_BASE_BUILD_CMDS
 	mkdir -p "$(HOST_DIR)/usr/lib/epics"

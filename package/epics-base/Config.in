@@ -1,6 +1,7 @@
 config BR2_PACKAGE_EPICS_BASE
 	bool "epics-base"
 	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_READLINE
 	help
 
 comment "epics-base needs a toolchain w/ C++"
