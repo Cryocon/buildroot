@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EPICS_BASE_VERSION = 3.15.4
+EPICS_BASE_VERSION = 3.15.7
 EPICS_BASE_SOURCE = base-$(EPICS_BASE_VERSION).tar.gz
 EPICS_BASE_SITE = http://www.aps.anl.gov/epics/download/base
 EPICS_BASE_LICENSE_FILES = LICENSE
